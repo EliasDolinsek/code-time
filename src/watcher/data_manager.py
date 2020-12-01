@@ -1,6 +1,6 @@
 import json as json_parser
 
-FILE = "applications.json"
+CONFIG_FILE = "config.json"
 
 
 class DataManager:

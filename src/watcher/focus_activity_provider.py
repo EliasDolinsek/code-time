@@ -1,7 +1,6 @@
 import sys
 
 if sys.platform in ['Mac', 'darwin', 'os2', 'os2emx']:
-    print(True)
     from AppKit import NSWorkspace
 
 
