@@ -11,3 +11,6 @@ code-time is a python CLI application which runs in the background and tracks ho
 * TODO: Start on boot
 * TODO: Menu bar item
 * TODO: Export to Twitter
+
+## Note
+Icons source: Fontawesome
