@@ -20,8 +20,9 @@ def read_month_data(month_str: str, year_str: str) -> dict:
 
 def write_month_data(mont_str: str, year_str: str, data: dict):
     file_path = get_file_path_for_data_file(mont_str, year_str)
-    if not os.path.exists(file_path):
-        os.mkdir(os.path.dirname(file_path))
+    file_dir = os.path.dirname(file_path)
+    if not os.path.exists(file_dir):
+        os.mkdir(file_dir)
     with open(file_path, "w") as file:
         file.write(json_parser.dumps(data))
 

@@ -7,13 +7,18 @@ TEXT_CONTINUE = "Continue tracking"
 
 class TrayHandler:
 
-    def __init__(self):
+    def __init__(self, on_pause_continue, on_quit):
+        super().__init__()
+        self.action_quit = QAction("Quit")
+        self.action_pause_continue = QAction(TEXT_PAUSE)
+
         self.app = QApplication([])
         self.app.setQuitOnLastWindowClosed(False)
-        self.action_pause_continue = QAction(TEXT_PAUSE)
-        self.action_quit = QAction("Quit")
 
-    def setup_tray_menu(self, on_pause_continue, on_quit):
+        self.provided_on_pause_continue = on_pause_continue
+        self.provided_on_quit = on_quit
+
+    def start(self):
         icon = QIcon("assets/clock.svg")
 
         tray = QSystemTrayIcon()
@@ -22,14 +27,14 @@ class TrayHandler:
 
         menu = QMenu()
 
-        self.action_quit.triggered.connect(lambda x: self._on_quit(on_quit))
-        self.action_pause_continue.triggered.connect(lambda x: self._on_pause_continue(on_pause_continue))
+        self.action_quit.triggered.connect(lambda x: self._on_quit(self.provided_on_quit))
+        self.action_pause_continue.triggered.connect(lambda x: self._on_pause_continue(self.provided_on_pause_continue))
 
         menu.addAction(self.action_pause_continue)
         menu.addAction(self.action_quit)
 
         tray.setContextMenu(menu)
-        self.app.exec()
+        self.app.exec_()
 
     def _on_quit(self, on_quit):
         on_quit()
