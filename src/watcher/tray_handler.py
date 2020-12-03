@@ -9,8 +9,8 @@ class TrayHandler:
 
     def __init__(self, on_pause_continue, on_quit):
         super().__init__()
-        self.action_quit = QAction("Quit")
         self.action_pause_continue = QAction(TEXT_PAUSE)
+        self.action_quit = QAction("Quit")
 
         self.app = QApplication([])
         self.app.setQuitOnLastWindowClosed(False)
