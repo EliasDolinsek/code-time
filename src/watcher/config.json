@@ -1,5 +1,13 @@
 {
   "activities": [
     "PyCharm"
-  ]
+  ],
+  "title_color": "#FFF",
+  "total_time_color": "#FFF",
+  "progress_background_color": "#FFF",
+  "progress_foreground_color": "#FFF",
+  "activity_title_color": "#FFF",
+  "activity_time_color": "#FFF",
+  "watermark_color": "#FFF",
+  "image": "/Users/eliasdolinsek/development/python-development/code-time/src/watcher/statistics/img1.png"
 }

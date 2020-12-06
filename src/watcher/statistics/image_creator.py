@@ -8,9 +8,8 @@ class ImageCreator:
     PROGRESS_BAR_HEIGHT = 20
     USER_IMAGE_SIZE = 100
 
-    def __init__(self, image_path: str, config: dict):
+    def __init__(self, config: dict):
         self.config = config
-        self.image_path = image_path
         self.font_paths = {
             "bold": "../assets/OpenSans-Bold.ttf",
             "extra_bold": "../assets/fonts/OpenSans-ExtraBold.ttf",
@@ -66,14 +65,13 @@ class ImageCreator:
                   fill=self.config["title_color"], )
 
     def create_image(self, statistics: dict):
-        with Image.open(self.image_path) as image:
+        with Image.open(self.config["image"]) as image:
             draw = ImageDraw.Draw(image)
             self.draw_title(draw, statistics["date"])
             self.draw_total_time(draw, statistics["total_time"])
             self.draw_activities(draw, statistics["activities"])
             self.draw_watermark(draw, image.height)
             self.paste_user_image(image)
-            image.show()
 
 
 if __name__ == "__main__":

@@ -68,3 +68,8 @@ def get_available_months(year: int) -> list:
 
     months.sort()
     return months
+
+
+def read_config() -> dict:
+    with open(CONFIG_FILE) as file:
+        return json_parser.loads(file.read())

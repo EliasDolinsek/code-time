@@ -4,6 +4,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 from src.watcher.data_manager import get_available_years, get_available_months, read_month_data
+from src.watcher.statistics.image_creator import ImageCreator
 
 TEXT_PAUSE = "Pause tracking"
 TEXT_CONTINUE = "Continue tracking"
@@ -11,8 +12,10 @@ TEXT_CONTINUE = "Continue tracking"
 
 class TrayHandler:
 
-    def __init__(self, on_pause_continue, on_quit):
+    def __init__(self, image_creator: ImageCreator, on_pause_continue, on_quit):
         super().__init__()
+        self.image_creator = image_creator
+
         self.action_pause_continue = QAction(TEXT_PAUSE)
         self.action_quit = QAction("Quit")
 
@@ -40,6 +43,9 @@ class TrayHandler:
 
         tray.setContextMenu(menu)
         self.app.exec_()
+
+    def save_statistic_as_png(self, statistics):
+        QFileDialog.saveFileContent("Test")
 
     def add_days_statistics_to_menu(self, menu, year, month):
         month_data = read_month_data(month, year)

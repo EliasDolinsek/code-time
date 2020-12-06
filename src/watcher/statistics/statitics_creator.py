@@ -1,0 +1,1 @@
+def get_statistics_of_month()
