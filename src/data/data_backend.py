@@ -2,6 +2,7 @@ import json
 import os
 
 DATA_FILES_PATH_KEYWORD = "data_files"
+CONFIG_FILE_PATH_KEYWORD = "config"
 
 
 class DataBackend:
@@ -28,7 +29,9 @@ class DataBackend:
         return os.path.join(self.paths[DATA_FILES_PATH_KEYWORD], f"{month}{year}.json")
 
     def read_config(self):
-        pass
+        with open(self.paths[CONFIG_FILE_PATH_KEYWORD], "r") as file:
+            return json.load(file)
 
-    def write_config(self):
-        pass
+    def write_config(self, config):
+        with open(self.paths[CONFIG_FILE_PATH_KEYWORD], "w") as file:
+            file.write(json.dumps(config))
