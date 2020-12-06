@@ -1,8 +1,13 @@
 import json
 import os
+from os import listdir
 
 DATA_FILES_PATH_KEYWORD = "data_files"
 CONFIG_FILE_PATH_KEYWORD = "config"
+
+
+def _parse_year_from_data_file_name(name: str) -> int:
+    return int(name[1:6])
 
 
 class DataBackend:
@@ -35,3 +40,29 @@ class DataBackend:
     def write_config(self, config):
         with open(self.paths[CONFIG_FILE_PATH_KEYWORD], "w") as file:
             file.write(json.dumps(config))
+
+    def get_days_with_data(self):
+        pass
+
+    def _get_available_years(self) -> list:
+        files = listdir(self.paths[DATA_FILES_PATH_KEYWORD])
+        years = []
+
+        for file in files:
+            year = _parse_year_from_data_file_name(file)
+            if year not in years:
+                years.append(year)
+
+        years.sort()
+        return years
+
+    def _get_available_months(self, year: int) -> list:
+        files = listdir(self.paths[DATA_FILES_PATH_KEYWORD])
+        months = []
+
+        for file in files:
+            if _parse_year_from_data_file_name(file) == year:
+                months.append(int(file[:2]))
+
+        months.sort()
+        return months
