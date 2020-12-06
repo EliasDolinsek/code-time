@@ -2,12 +2,12 @@ import json
 import os
 from os import listdir
 
-DATA_FILES_PATH_KEYWORD = "data_files"
+DATA_FILES_PATH_KEYWORD = "data_directory"
 CONFIG_FILE_PATH_KEYWORD = "config"
 
 
 def _parse_year_from_data_file_name(name: str) -> int:
-    return int(name[1:6])
+    return int(name[2:6])
 
 
 class DataBackend:
@@ -18,7 +18,7 @@ class DataBackend:
         file_path = self._get_data_file_path(year, month)
         if os.path.isfile(file_path):
             with open(file_path, "r") as file:
-                return json.load(file)
+                return json.loads(file.read())
         else:
             return {}
 
@@ -42,7 +42,19 @@ class DataBackend:
             file.write(json.dumps(config))
 
     def get_days_with_data(self):
-        pass
+        result = {}
+        years = self._get_available_years()
+
+        for year in years:
+            months = self._get_available_months(year)
+            for month in months:
+                days_of_month = []
+                for day_data in self.read_month_data(year, month)["activity"]:
+                    days_of_month.append(day_data["day"])
+
+                result[year] = {month: days_of_month}
+
+        return result
 
     def _get_available_years(self) -> list:
         files = listdir(self.paths[DATA_FILES_PATH_KEYWORD])
