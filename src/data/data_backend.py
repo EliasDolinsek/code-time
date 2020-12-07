@@ -48,11 +48,8 @@ class DataBackend:
         for year in years:
             months = self._get_available_months(year)
             for month in months:
-                days_of_month = []
-                for day_data in self.read_month_data(year, month)["activity"]:
-                    days_of_month.append(day_data["day"])
-
-                result[year] = {month: days_of_month}
+                days = list(self.read_month_data(year, month)["activity"].keys())
+                result[year] = {month: days}
 
         return result
 

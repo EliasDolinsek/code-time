@@ -3,7 +3,6 @@ import json
 import os
 import unittest
 import tempfile
-import shutil
 
 from src.data.data_backend import DataBackend
 
@@ -39,19 +38,15 @@ class DataBackendTest(unittest.TestCase):
         }
 
         self.mock_month_data = {
-            "activity": [
-                {
-                    "day": datetime.today().day,
-                    "activities": [
-                        {
-
-                            "name": "PyCharm",
-                            "start_time": str(datetime.today().timestamp()),
-                            "stop_time": str(datetime.today().timestamp())
-                        }
-                    ]
-                }
-            ]
+            "activity": {
+                str(datetime.today().day): [
+                    {
+                        "name": "PyCharm",
+                        "start_time": 0,
+                        "end_time": 0
+                    }
+                ]
+            }
         }
 
         self.test_year = datetime.today().year
@@ -93,7 +88,7 @@ class DataBackendTest(unittest.TestCase):
         result = self.data_backend.get_days_with_data()
         expected_result = {
             2020: {
-                12: [datetime.today().day]
+                12: [str(datetime.today().day)]
             }
         }
 
