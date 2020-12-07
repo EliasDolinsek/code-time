@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 
 from src.watcher.data_manager import read_config, read_month_data, write_month_data
-from src.watcher.focus_activity_provider import MacFocusActivityProvider
+from src.model.focus_activity_provider import MacFocusActivityProvider
 from src.watcher.statistics.image_creator import ImageCreator
 from src.watcher.tray_handler import TrayHandler
 

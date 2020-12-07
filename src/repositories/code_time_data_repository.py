@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from src.data.data_backend import DataBackend
+from src.data_sources.data_backend import DataBackend
 
 
-class CodeTimeDataModel:
+class CodeTimeDataRepository:
     month_data = {}
 
     def __init__(self, data_backend: DataBackend):

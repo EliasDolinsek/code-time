@@ -13,8 +13,3 @@ class FocusActivityProvider:
 class MacFocusActivityProvider(FocusActivityProvider):
     def get_activity_name(self) -> str:
         return NSWorkspace.sharedWorkspace().activeApplication()['NSApplicationName']
-
-
-if __name__ == "__main__":
-    activityProvider = MacFocusActivityProvider()
-    print(activityProvider.get_activity_name())
