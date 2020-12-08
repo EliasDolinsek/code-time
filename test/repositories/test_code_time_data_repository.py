@@ -64,17 +64,62 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         data_backend.write_month_data.assert_called_with(year, month, expected_result)
 
     def test_get_days_with_data(self):
-        expected_result = {
+        mock_data = {
             2020: {
                 12: [str(datetime.today().day)]
             }
         }
         data_backend = DataBackend({})
-        data_backend.get_days_with_data = MagicMock(return_value=expected_result)
+        data_backend.get_days_with_data = MagicMock(return_value=mock_data)
 
         data_model = CodeTimeDataRepository(data_backend)
         result = data_model.get_days_with_data()
-        self.assertDictEqual(expected_result, result)
+        self.assertDictEqual(mock_data, result)
+
+    def test_get_months_with_data(self):
+        mock_data = {
+            2020: {
+                12: [0]
+            },
+            2019: {
+                12: [0]
+            }
+        }
+
+        expected_data = {
+            2020: [
+                12
+            ],
+            2019: [
+                12
+            ]
+        }
+
+        data_backend = DataBackend({})
+        data_backend.get_days_with_data = MagicMock(return_value=mock_data)
+
+        data_model = CodeTimeDataRepository(data_backend)
+        result = data_model.get_months_with_data()
+
+        self.assertDictEqual(expected_data, result)
+
+    def test_get_years_with_data(self):
+        mock_data = {
+            2020: {
+                12: [0]
+            },
+            2019: {
+                12: [0]
+            }
+        }
+
+        data_backend = DataBackend({})
+        data_backend.get_days_with_data = MagicMock(return_value=mock_data)
+
+        data_model = CodeTimeDataRepository(data_backend)
+        result = data_model.get_years_with_data()
+
+        self.assertListEqual([2020, 2019], result)
 
     def test_write_config(self):
         config = {
@@ -83,7 +128,7 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
 
         data_backend = DataBackend({})
         data_backend.write_config = MagicMock()
-        
+
         data_model = CodeTimeDataRepository(data_backend)
         data_model.write_config(config)
 

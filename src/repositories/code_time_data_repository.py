@@ -44,6 +44,15 @@ class CodeTimeDataRepository:
 
     def get_months_with_data(self):
         data = self.get_days_with_data()
+        result = {}
+        for key in data.keys():
+            result[key] = list(data[key].keys())
+
+        return result
+
+    def get_years_with_data(self):
+        data = self.get_days_with_data()
+        return list(data.keys())
 
     def get_config(self):
         return self.data_backend.read_config()
