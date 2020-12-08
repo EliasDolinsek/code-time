@@ -39,7 +39,7 @@ class TrayHandler:
         self.action_pause_continue.triggered.connect(lambda x: self._on_pause_continue())
 
         menu.addAction(self.action_pause_continue)
-        # self.add_statistics_to_menu(menu)
+        self.add_statistics_to_menu(menu)
         menu.addAction(self.action_quit)
 
         tray.setContextMenu(menu)
@@ -49,23 +49,22 @@ class TrayHandler:
         QFileDialog.saveFileContent("Test")
 
     def add_days_statistics_to_menu(self, menu, year, month):
-        month_data = self.data_repository.get_month_data(year, month)
-        for day in month_data["activity"]:
+        days = self.data_repository.get_days_with_data()[year][month]
+        for day in days:
             day_menu = menu.addMenu(str(day))
             self.add_statistic_actions_to_menu(day_menu)
 
     def add_months_statistics_to_menu(self, menu, year):
-        data = self.data_repository.get_days_with_data()
-        months = get_available_months(year)
+        months = self.data_repository.get_months_with_data()[year]
         for month in months:
             month_str = datetime.date(2000, month, 1).strftime('%B')
             current_month_menu = menu.addMenu(month_str)
             self.add_days_statistics_to_menu(current_month_menu, year, month)
 
     def add_years_statistics_to_menu(self, menu):
-        years = get_available_years()
+        years = self.data_repository.get_years_with_data()
         for year in years:
-            current_year_menu = menu.addMenu(year)
+            current_year_menu = menu.addMenu(str(year))
             self.add_months_statistics_to_menu(current_year_menu, year)
 
     def add_statistics_to_menu(self, menu):
