@@ -7,13 +7,6 @@ from src.use_cases.image_creator import ImageCreator
 
 if __name__ == "__main__":
     config = {
-        "title_color": (0, 0, 0, 255),
-        "total_time_color": (0, 0, 0, 255),
-        "progress_background_color": (0, 150, 199, 33),
-        "progress_foreground_color": (0, 150, 199, 255),
-        "activity_title_color": (0, 0, 0, 255),
-        "activity_time_color": (0, 0, 0, 255),
-        "watermark_color": (0, 0, 0, 255),
         "data_directory": "/Users/eliasdolinsek/development/python-development/code-time/dev_assets/data",
         "config": "/Users/eliasdolinsek/development/python-development/code-time/dev_assets/config.json"
     }
@@ -22,7 +15,7 @@ if __name__ == "__main__":
     data_repository = CodeTimeDataRepository(data_backend=data_backend)
     focus_activity_provider = MacFocusActivityProvider()
 
-    image_creator = ImageCreator(data_backend.read_config())
+    image_creator = ImageCreator(data_repository)
     activity_tracker = ActivityTracker(data_repository=data_repository, focus_activity_provider=focus_activity_provider)
     activity_tracker.start()
 
