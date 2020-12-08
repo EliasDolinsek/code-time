@@ -3,8 +3,9 @@ import datetime
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-from src.watcher.data_manager import get_available_years, get_available_months, read_month_data
-from src.watcher.statistics.image_creator import ImageCreator
+from src.repositories.code_time_data_repository import CodeTimeDataRepository
+from src.use_cases.activity_tracker import ActivityTracker
+from src.use_cases.image_creator import ImageCreator
 
 TEXT_PAUSE = "Pause tracking"
 TEXT_CONTINUE = "Continue tracking"
@@ -12,9 +13,12 @@ TEXT_CONTINUE = "Continue tracking"
 
 class TrayHandler:
 
-    def __init__(self, image_creator: ImageCreator, on_pause_continue, on_quit):
+    def __init__(self, image_creator: ImageCreator, activity_tracker: ActivityTracker,
+                 data_repository: CodeTimeDataRepository):
         super().__init__()
         self.image_creator = image_creator
+        self.activity_tracker = activity_tracker
+        self.data_repository = data_repository
 
         self.action_pause_continue = QAction(TEXT_PAUSE)
         self.action_quit = QAction("Quit")
@@ -22,11 +26,8 @@ class TrayHandler:
         self.app = QApplication([])
         self.app.setQuitOnLastWindowClosed(False)
 
-        self.provided_on_pause_continue = on_pause_continue
-        self.provided_on_quit = on_quit
-
     def start(self):
-        icon = QIcon("assets/clock.svg")
+        icon = QIcon("../res/clock.svg")
 
         tray = QSystemTrayIcon()
         tray.setIcon(icon)
@@ -34,11 +35,11 @@ class TrayHandler:
 
         menu = QMenu()
 
-        self.action_quit.triggered.connect(lambda x: self._on_quit(self.provided_on_quit))
-        self.action_pause_continue.triggered.connect(lambda x: self._on_pause_continue(self.provided_on_pause_continue))
+        self.action_quit.triggered.connect(lambda x: self._on_quit())
+        self.action_pause_continue.triggered.connect(lambda x: self._on_pause_continue())
 
         menu.addAction(self.action_pause_continue)
-        self.add_statistics_to_menu(menu)
+        # self.add_statistics_to_menu(menu)
         menu.addAction(self.action_quit)
 
         tray.setContextMenu(menu)
@@ -48,12 +49,13 @@ class TrayHandler:
         QFileDialog.saveFileContent("Test")
 
     def add_days_statistics_to_menu(self, menu, year, month):
-        month_data = read_month_data(month, year)
+        month_data = self.data_repository.get_month_data(year, month)
         for day in month_data["activity"]:
             day_menu = menu.addMenu(str(day))
             self.add_statistic_actions_to_menu(day_menu)
 
     def add_months_statistics_to_menu(self, menu, year):
+        data = self.data_repository.get_days_with_data()
         months = get_available_months(year)
         for month in months:
             month_str = datetime.date(2000, month, 1).strftime('%B')
@@ -77,14 +79,12 @@ class TrayHandler:
         menu.addAction("Show")
         menu.addAction("Export as PNG")
 
+    def _on_quit(self):
+        self.activity_tracker.on_quit()
+        self.app.quit()
 
-def _on_quit(self, on_quit):
-    on_quit()
-    self.app.quit()
-
-
-def _on_pause_continue(self, on_pause_continue):
-    if on_pause_continue():
-        self.action_pause_continue.setText(TEXT_CONTINUE)
-    else:
-        self.action_pause_continue.setText(TEXT_PAUSE)
+    def _on_pause_continue(self):
+        if self.activity_tracker.on_pause_continue():
+            self.action_pause_continue.setText(TEXT_CONTINUE)
+        else:
+            self.action_pause_continue.setText(TEXT_PAUSE)

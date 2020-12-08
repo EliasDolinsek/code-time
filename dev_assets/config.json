@@ -6,7 +6,6 @@
   "activity_title_color": "#FFF",
   "activity_time_color": "#FFF",
   "watermark_color": "#FFF",
-  "image": "/Users/eliasdolinsek/development/python-development/code-time/src/watcher/statistics/img1.png",
   "activities": [
     "PyCharm"
   ]

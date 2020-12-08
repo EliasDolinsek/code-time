@@ -17,7 +17,7 @@ class ImageCreator:
         }
 
     def paste_user_image(self, image):
-        user_image = Image.open("../assets/user.png", "r")
+        user_image = Image.open("../../dev_assets/user.png", "r")
         user_image = user_image.resize((ImageCreator.USER_IMAGE_SIZE, ImageCreator.USER_IMAGE_SIZE), Image.ANTIALIAS)
         image.paste(user_image,
                     (image.width - ImageCreator.USER_IMAGE_SIZE - 140, 200 - ImageCreator.USER_IMAGE_SIZE // 2), )
@@ -72,44 +72,3 @@ class ImageCreator:
             self.draw_activities(draw, statistics["activities"])
             self.draw_watermark(draw, image.height)
             self.paste_user_image(image)
-
-
-if __name__ == "__main__":
-    config = {
-        "title_color": (0, 0, 0, 255),
-        "total_time_color": (0, 0, 0, 255),
-        "progress_background_color": (0, 150, 199, 33),
-        "progress_foreground_color": (0, 150, 199, 255),
-        "activity_title_color": (0, 0, 0, 255),
-        "activity_time_color": (0, 0, 0, 255),
-        "watermark_color": (0, 0, 0, 255),
-    }
-
-    statistics = {
-        "date": "5th Dec",
-        "total_time": "5h 25min",
-        "activities": [
-            {
-                "name": "PyCharm",
-                "time": "5h 25min",
-                "progress": 0.5
-            },
-            {
-                "name": "IntelliJ",
-                "time": "3h 42min",
-                "progress": 0.3
-            },
-            {
-                "name": "VS Code",
-                "time": "3h 42min",
-                "progress": 0.2
-            },
-            {
-                "name": "Vim, X-Code and more",
-                "time": "3h 42min",
-                "progress": 0.1
-            },
-        ]
-    }
-    creator = ImageCreator("img1.png", config)
-    creator.create_image(statistics)
