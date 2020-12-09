@@ -77,3 +77,4 @@ class ImageCreator:
             self.draw_activities(draw, statistics["activities"])
             self.draw_watermark(draw, image.height)
             self.paste_user_image(image)
+            return image

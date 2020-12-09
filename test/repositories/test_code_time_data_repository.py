@@ -146,3 +146,82 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         result = data_model.get_config()
 
         self.assertDictEqual(config, result)
+
+    def test_get_statistics(self):
+        mock_month_data = {
+            "activity": {
+                "0": [
+                    {
+                        "name": "IntelliJ",
+                        "start_time": 0,
+                        "end_time": 1000 * 10
+                    },
+                    {
+                        "name": "PyCharm",
+                        "start_time": 0,
+                        "end_time": 1000 * 20
+                    },
+                    {
+                        "name": "PyCharm",
+                        "start_time": 0,
+                        "end_time": 1000 * 60
+                    },
+                    {
+                        "name": "VS Code",
+                        "start_time": 0,
+                        "end_time": 1000 * 5
+                    },
+                    {
+                        "name": "Vim",
+                        "start_time": 0,
+                        "end_time": 1000 * 3
+                    },
+                    {
+                        "name": "WebStorm",
+                        "start_time": 0,
+                        "end_time": 1000 * 1.5
+                    },
+                    {
+                        "name": "Terminal",
+                        "start_time": 0,
+                        "end_time": 1000 * 0.5
+                    }
+                ]
+            }
+        }
+
+        data_backend = DataBackend({})
+        data_backend.read_month_data = MagicMock(return_value=mock_month_data)
+
+        data_model = CodeTimeDataRepository(data_backend)
+        result = data_model.get_statistics(year=2021, month=0, day=0)
+
+        expected_result = {
+            "date": "1st Jan 2020",
+            "total_time": 100000.0,
+            "activities": [
+                {
+                    "name": "PyCharm",
+                    "time": 1000 * 80,
+                    "progress": 0.8
+                },
+                {
+                    "name": "IntelliJ",
+                    "time": 1000 * 10,
+                    "progress": 0.1
+                },
+                {
+                    "name": "VS Code",
+                    "time": 1000 * 5,
+                    "progress": 0.05
+                },
+                {
+                    "name": "Vim, WebStorm and Terminal",
+                    "time": 1000 * 5.0,
+                    "progress": 0.05
+                },
+            ]
+        }
+
+        self.maxDiff = None
+        self.assertDictEqual(expected_result, result)

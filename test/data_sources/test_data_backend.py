@@ -4,7 +4,7 @@ import os
 import unittest
 import tempfile
 
-from src.data.data_backend import DataBackend
+from src.data_sources.data_backend import DataBackend
 
 
 class DataBackendTest(unittest.TestCase):

@@ -59,3 +59,73 @@ class CodeTimeDataRepository:
 
     def write_config(self, config):
         self.data_backend.write_config(config)
+
+    @staticmethod
+    def index_of_item_dict_with_name(name, activities):
+        for i, d in enumerate(activities):
+            if d["name"] == name:
+                return i
+
+        return -1
+
+    def get_statistics(self, year, month, day):
+        data = self.get_month_data(year, month)["activity"][str(day)]
+        total_time = 0
+        sorted_activities = []
+
+        for entry in data:
+            time = entry["end_time"] - entry["start_time"]
+            total_time += time
+
+            index = self.index_of_item_dict_with_name(entry["name"], sorted_activities)
+            if index == -1:
+                sorted_activities.append({
+                    "name": entry["name"],
+                    "time": time
+                })
+            else:
+                sorted_activities[index]["time"] += time
+
+        sorted_activities = sorted(sorted_activities, key=lambda d: d["time"], reverse=True)
+        sorted_activities = CodeTimeDataRepository._summarize_activities(sorted_activities)
+
+        for d in sorted_activities:
+            d["progress"] = d["time"] / total_time
+
+        return {
+            "date": "1st Jan 2020",
+            "total_time": total_time,
+            "activities": sorted_activities
+        }
+
+    @staticmethod
+    def _summarize_activities(activities):
+        if len(activities) > 3:
+            summarised_activities = activities[3:]
+            summarised_activities_time = 0
+
+            names_str = ""
+
+            for i, d in enumerate(summarised_activities[:2]):
+                summarised_activities_time += d["time"]
+                if i == 0:
+                    names_str += d["name"]
+                else:
+                    names_str += f", {d['name']}"
+
+            remaining_activities = summarised_activities[2:]
+
+            if len(remaining_activities) > 1:
+                names_str += " and more"
+                for activity in remaining_activities:
+                    summarised_activities_time += activity["time"]
+            else:
+                names_str += f" and {remaining_activities[0]['name']}"
+                summarised_activities_time += remaining_activities[0]["time"]
+
+            return activities[:3] + [{
+                "name": names_str,
+                "time": summarised_activities_time
+            }]
+        else:
+            return activities

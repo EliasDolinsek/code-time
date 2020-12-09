@@ -2,6 +2,7 @@ import datetime
 
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+from PyQt5.uic.properties import QtGui
 
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
 from src.use_cases.activity_tracker import ActivityTracker
@@ -46,7 +47,7 @@ class TrayHandler:
         self.app.exec_()
 
     def save_statistic_as_png(self, statistics):
-        QFileDialog.saveFileContent("Test")
+        return QFileDialog.getSaveFileName(self, 'Save File')
 
     def add_days_statistics_to_menu(self, menu, year, month):
         days = self.data_repository.get_days_with_data()[year][month]
@@ -75,7 +76,7 @@ class TrayHandler:
         self.add_years_statistics_to_menu(statistics_menu)
 
     def add_statistic_actions_to_menu(self, menu):
-        menu.addAction("Show")
+        menu.addAction("Show").triggered.connect(lambda: print("CLICK"))
         menu.addAction("Export as PNG")
 
     def _on_quit(self):
