@@ -52,7 +52,7 @@ class TrayHandler:
         days = self.data_repository.get_days_with_data()[year][month]
         for day in days:
             day_menu = menu.addMenu(str(day))
-            self.add_statistic_actions_to_menu(day_menu)
+            self.add_statistic_actions_to_menu(day_menu, year, month, int(day))
 
     def add_months_statistics_to_menu(self, menu, year):
         months = self.data_repository.get_months_with_data()[year]
@@ -71,14 +71,16 @@ class TrayHandler:
         statistics_menu = menu.addMenu("Statistics")
         today_menu = statistics_menu.addMenu("Today")
 
-        self.add_statistic_actions_to_menu(today_menu)
+        today = datetime.datetime.today()
+        self.add_statistic_actions_to_menu(today_menu, today.year, today.month, today.day)
         self.add_years_statistics_to_menu(statistics_menu)
 
-    def show_statics_of_day(self):
-        pass
+    def show_statics_of_day(self, year: int, month: int, day: int):
+        image = self.image_creator.create_image(self.data_repository.get_statistics(year, month, day))
+        image.show()
 
-    def add_statistic_actions_to_menu(self, menu):
-        menu.addAction("Show").triggered.connect(lambda: print("CLICK"))
+    def add_statistic_actions_to_menu(self, menu, year, month, day):
+        menu.addAction("Show").triggered.connect(lambda: self.show_statics_of_day(year, month, day))
         menu.addAction("Export as PNG")
 
     def _on_quit(self):

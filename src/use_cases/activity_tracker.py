@@ -26,21 +26,31 @@ class ActivityTracker(threading.Thread):
     def is_activity_to_track(self, activity):
         return activity in self.data_repository.get_config()["activities"]
 
+    def write_activity_data(self, name, start_time, stop_time):
+        self.data_repository.add_month_data({
+            "name": name,
+            "start_time": start_time,
+            "stop_time": stop_time
+        })
+
     def run(self):
         last_activity = self.focus_activity_provider.get_activity_name()
         activity_start_time = datetime.now().timestamp()
+
+        def write_if_activity_is_to_track():
+            if self.is_activity_to_track(last_activity):
+                self.data_repository.add_month_data({
+                    "name": last_activity,
+                    "start_time": activity_start_time,
+                    "stop_time": datetime.now().timestamp()
+                })
 
         while not self.quit_app:
             if not self.tracking_paused:
                 current_activity = self.focus_activity_provider.get_activity_name()
                 if last_activity != current_activity:
                     if self.is_activity_to_track(last_activity):
-                        self.data_repository.add_month_data({
-                            "name": last_activity,
-                            "start_time": activity_start_time,
-                            "stop_time": datetime.now().timestamp()
-                        })
-
+                        write_if_activity_is_to_track()
                     last_activity = current_activity
-
             time.sleep(1)
+        write_if_activity_is_to_track()

@@ -15,7 +15,7 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
                     {
                         "name": "PyCharm",
                         "start_time": 0,
-                        "end_time": 0
+                        "stop_time": 0
                     }
                 ]
             }
@@ -38,7 +38,7 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
                     {
                         "name": "PyCharm",
                         "start_time": 0,
-                        "end_time": 0
+                        "stop_time": 0
                     }
                 ]
             }
@@ -47,7 +47,7 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         additional_activity = {
             "name": "PyCharm",
             "start_time": 0,
-            "end_time": 0
+            "stop_time": 0
         }
 
         expected_result = mock_read_month_data_result.copy()
@@ -154,37 +154,37 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
                     {
                         "name": "IntelliJ",
                         "start_time": 0,
-                        "end_time": 1000 * 10
+                        "stop_time": 1000 * 10
                     },
                     {
                         "name": "PyCharm",
                         "start_time": 0,
-                        "end_time": 1000 * 20
+                        "stop_time": 1000 * 20
                     },
                     {
                         "name": "PyCharm",
                         "start_time": 0,
-                        "end_time": 1000 * 60
+                        "stop_time": 1000 * 60
                     },
                     {
                         "name": "VS Code",
                         "start_time": 0,
-                        "end_time": 1000 * 5
+                        "stop_time": 1000 * 5
                     },
                     {
                         "name": "Vim",
                         "start_time": 0,
-                        "end_time": 1000 * 3
+                        "stop_time": 1000 * 3
                     },
                     {
                         "name": "WebStorm",
                         "start_time": 0,
-                        "end_time": 1000 * 1.5
+                        "stop_time": 1000 * 1.5
                     },
                     {
                         "name": "Terminal",
                         "start_time": 0,
-                        "end_time": 1000 * 0.5
+                        "stop_time": 1000 * 0.5
                     }
                 ]
             }

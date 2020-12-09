@@ -1,11 +1,13 @@
 {
-  "title_color": "#FFF",
-  "total_time_color": "#FFF",
-  "progress_background_color": "#FFF",
-  "progress_foreground_color": "#FFF",
-  "activity_title_color": "#FFF",
-  "activity_time_color": "#FFF",
-  "watermark_color": "#FFF",
+  "title_color": "#000",
+  "total_time_color": "#000",
+  "progress_background_color": "#009688",
+  "progress_foreground_color": "#52c7b8",
+  "activity_title_color": "#000",
+  "activity_time_color": "#000",
+  "watermark_color": "#000",
+  "image": "/Users/eliasdolinsek/development/python-development/code-time/dev_assets/img1.png",
+  "user_image": "/Users/eliasdolinsek/development/python-development/code-time/dev_assets/user.png",
   "activities": [
     "PyCharm"
   ]

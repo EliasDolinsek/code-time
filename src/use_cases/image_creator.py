@@ -22,7 +22,7 @@ class ImageCreator:
         return self.data_repository.get_config()
 
     def paste_user_image(self, image):
-        user_image = Image.open("../../dev_assets/user.png", "r")
+        user_image = Image.open(self.get_config()["user_image"], "r")
         user_image = user_image.resize((ImageCreator.USER_IMAGE_SIZE, ImageCreator.USER_IMAGE_SIZE), Image.ANTIALIAS)
         image.paste(user_image,
                     (image.width - ImageCreator.USER_IMAGE_SIZE - 140, 200 - ImageCreator.USER_IMAGE_SIZE // 2), )
@@ -50,17 +50,23 @@ class ImageCreator:
                   fill=self.get_config()["activity_title_color"])
 
         # Draw activity time
-        draw.text((x + ImageCreator.PROGRESS_BAR_WIDTH, y - 20), time,
+        draw.text((x + ImageCreator.PROGRESS_BAR_WIDTH, y - 20), ImageCreator.time_as_str(time),
                   font=ImageFont.truetype(self.font_paths["bold"], 30),
                   fill=self.get_config()["activity_time_color"],
                   anchor="rt")
 
     def draw_activities(self, draw: ImageDraw, activities: list):
-        for activity, index in zip(activities, range(len(activities))):
-            self.draw_activity(draw, activity["name"], activity["time"], activity["progress"], 140, 370 + index * 110)
+        for i, activity in enumerate(activities):
+            self.draw_activity(draw, activity["name"], activity["time"], activity["progress"], 140, 370 + i * 110)
 
-    def draw_total_time(self, draw: ImageDraw, total_time: str):
-        draw.text((140, 189), total_time,
+    @staticmethod
+    def time_as_str(time):
+        minutes = int((time * 1000 / (1000 * 60)) % 60)
+        hours = int((time * 1000 / (1000 * 60 * 60)) % 24)
+        return f"{hours}h {minutes}min"
+
+    def draw_total_time(self, draw: ImageDraw, total_time):
+        draw.text((140, 189), ImageCreator.time_as_str(total_time),
                   font=ImageFont.truetype(self.font_paths["extra_bold"], 60),
                   fill=self.get_config()["total_time_color"], )
 

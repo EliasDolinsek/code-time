@@ -4,8 +4,6 @@ from src.data_sources.data_backend import DataBackend
 
 
 class CodeTimeDataRepository:
-    month_data_year = None
-    month_data_month = None
     month_data = {}
 
     def __init__(self, data_backend: DataBackend):
@@ -17,14 +15,11 @@ class CodeTimeDataRepository:
 
     def _cache_month_data(self, year: int, month: int):
         self.month_data[f"{month}{year}"] = self.data_backend.read_month_data(year=year, month=month)
-        self.month_data_year = year
-        self.month_data_month = month
 
     def add_month_data(self, month_data, year=datetime.today().year, month=datetime.today().month,
                        day=datetime.today().day):
         key = f"{month}{year}"
-
-        if self.month_data_year != year or self.month_data_month != month or key not in self.month_data:
+        if key not in self.month_data:
             self._cache_month_data(year, month)
 
         data = self.month_data[key]
@@ -74,7 +69,7 @@ class CodeTimeDataRepository:
         sorted_activities = []
 
         for entry in data:
-            time = entry["end_time"] - entry["start_time"]
+            time = entry["stop_time"] - entry["start_time"]
             total_time += time
 
             index = self.index_of_item_dict_with_name(entry["name"], sorted_activities)
@@ -93,7 +88,7 @@ class CodeTimeDataRepository:
             d["progress"] = d["time"] / total_time
 
         return {
-            "date": datetime(year, month + 1, day + 1).strftime("%b %d %Y"),
+            "date": datetime(year, month, day).strftime("%b %d %Y"),
             "total_time": total_time,
             "activities": sorted_activities
         }
