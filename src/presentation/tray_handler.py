@@ -2,7 +2,6 @@ import datetime
 
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from PyQt5.uic.properties import QtGui
 
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
 from src.use_cases.activity_tracker import ActivityTracker
@@ -74,6 +73,9 @@ class TrayHandler:
 
         self.add_statistic_actions_to_menu(today_menu)
         self.add_years_statistics_to_menu(statistics_menu)
+
+    def show_statics_of_day(self):
+        pass
 
     def add_statistic_actions_to_menu(self, menu):
         menu.addAction("Show").triggered.connect(lambda: print("CLICK"))

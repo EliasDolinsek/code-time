@@ -197,7 +197,7 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         result = data_model.get_statistics(year=2021, month=0, day=0)
 
         expected_result = {
-            "date": "1st Jan 2020",
+            "date": "Jan 01 2021",
             "total_time": 100000.0,
             "activities": [
                 {

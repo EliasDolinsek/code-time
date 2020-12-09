@@ -86,14 +86,14 @@ class CodeTimeDataRepository:
             else:
                 sorted_activities[index]["time"] += time
 
-        sorted_activities = sorted(sorted_activities, key=lambda d: d["time"], reverse=True)
+        sorted_activities = sorted(sorted_activities, key=lambda activity: activity["time"], reverse=True)
         sorted_activities = CodeTimeDataRepository._summarize_activities(sorted_activities)
 
         for d in sorted_activities:
             d["progress"] = d["time"] / total_time
 
         return {
-            "date": "1st Jan 2020",
+            "date": datetime(year, month + 1, day + 1).strftime("%b %d %Y"),
             "total_time": total_time,
             "activities": sorted_activities
         }
