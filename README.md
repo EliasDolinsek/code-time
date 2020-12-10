@@ -8,7 +8,8 @@ code-time is a python application which runs in the background and tracks how lo
 * Track daily coding time
 * Tray menu
 * Run in background
-* TODO: Display statistics
+* Display statistics
+* Export statistics as PNG
 * TODO: Start on boot
 * TODO: Export to Twitter
 
