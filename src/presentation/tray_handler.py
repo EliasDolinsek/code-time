@@ -1,5 +1,7 @@
 import datetime
+import os
 
+from pathlib import Path
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
@@ -45,8 +47,14 @@ class TrayHandler:
         tray.setContextMenu(menu)
         self.app.exec_()
 
-    def save_statistic_as_png(self, statistics):
-        return QFileDialog.getSaveFileName(self, 'Save File')
+    def save_statistic_as_png(self, year, month, day):
+        recommended_path = str(Path.home().joinpath(f"code-time_{day}{month}{year}.png"))
+        result = QFileDialog.getSaveFileName(QFileDialog(), "Save statistic", recommended_path, "Image (*.png)"),
+
+        selected_path = result[0][0]
+        if selected_path != "":
+            statistics = self.data_repository.get_statistics(year, month, day)
+            self.image_creator.create_image(statistics).save(selected_path)
 
     def add_days_statistics_to_menu(self, menu, year, month):
         days = self.data_repository.get_days_with_data()[year][month]
@@ -81,7 +89,7 @@ class TrayHandler:
 
     def add_statistic_actions_to_menu(self, menu, year, month, day):
         menu.addAction("Show").triggered.connect(lambda: self.show_statics_of_day(year, month, day))
-        menu.addAction("Export as PNG")
+        menu.addAction("Export as PNG").triggered.connect(lambda: self.save_statistic_as_png(year, month, day))
 
     def _on_quit(self):
         self.activity_tracker.on_quit()
