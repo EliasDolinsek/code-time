@@ -8,7 +8,7 @@ from src.repositories.code_time_data_repository import CodeTimeDataRepository
 class ImageCreator:
     PROGRESS_BAR_WIDTH = 800
     PROGRESS_BAR_HEIGHT = 20
-    USER_IMAGE_SIZE = 100
+    USER_IMAGE_SIZE = 125
 
     def __init__(self, data_repository: CodeTimeDataRepository):
         self.data_repository = data_repository
@@ -24,8 +24,10 @@ class ImageCreator:
     def paste_user_image(self, image):
         user_image = Image.open(self.get_config()["user_image"], "r")
         user_image = user_image.resize((ImageCreator.USER_IMAGE_SIZE, ImageCreator.USER_IMAGE_SIZE), Image.ANTIALIAS)
-        image.paste(user_image,
-                    (image.width - ImageCreator.USER_IMAGE_SIZE - 140, 200 - ImageCreator.USER_IMAGE_SIZE // 2), )
+
+        user_image_x = image.width - ImageCreator.USER_IMAGE_SIZE - 140
+        user_image_y = 200 - ImageCreator.USER_IMAGE_SIZE // 2
+        image.paste(user_image, (user_image_x, user_image_y), user_image)
 
     def draw_watermark(self, draw: ImageDraw, max_height):
         draw.text((140, max_height - 200), "by code-time", font=ImageFont.truetype(self.font_paths["semi_bold"], 30),
@@ -61,8 +63,8 @@ class ImageCreator:
 
     @staticmethod
     def time_as_str(time):
-        minutes = int((time * 1000 / (1000 * 60)) % 60)
-        hours = int((time * 1000 / (1000 * 60 * 60)) % 24)
+        minutes = int((time / 60) % 60)
+        hours = int((time / (60 * 60)) % 24)
         return f"{hours}h {minutes}min"
 
     def draw_total_time(self, draw: ImageDraw, total_time):
