@@ -11,7 +11,6 @@ code-time is a python application which runs in the background and tracks how lo
 * Display statistics
 * Export statistics as PNG
 * TODO: Start on boot
-* TODO: Export to Twitter
 
 ## Note
 Icons source: Fontawesome
