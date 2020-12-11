@@ -63,8 +63,11 @@ class ImageCreator:
 
     @staticmethod
     def time_as_str(time):
-        minutes = int((time / 60) % 60)
-        hours = int((time / (60 * 60)) % 24)
+        seconds = time / 1000
+
+        minutes = int(seconds / 60 % 60)
+        hours = int(seconds / 3600)
+
         return f"{hours}h {minutes}min"
 
     def draw_total_time(self, draw: ImageDraw, total_time):
