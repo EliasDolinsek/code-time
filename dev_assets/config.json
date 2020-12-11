@@ -1,8 +1,8 @@
 {
   "title_color": "#000",
   "total_time_color": "#000",
-  "progress_background_color": "#757de8",
   "progress_foreground_color": "#3f51b5",
+  "progress_background_color": "#D1D1D1",
   "activity_title_color": "#000",
   "activity_time_color": "#000",
   "watermark_color": "#000",
@@ -11,6 +11,7 @@
   "activities": [
     "PyCharm",
     "Terminal",
-    "GitHub Desktop"
+    "GitHub Desktop",
+    "XD"
   ]
 }

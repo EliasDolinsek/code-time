@@ -48,12 +48,15 @@ class DataBackend:
         for year in years:
             months = self._get_available_months(year)
             for month in months:
-                days = list(self.read_month_data(year, month)["activity"].keys())
-                result[year] = {month: days}
+                days = list(self.read_month_data(year, month).keys())
+                result[year] = {month: list(map(lambda x: int(x), days))}
 
         return result
 
     def _get_available_years(self) -> list:
+        if not os.path.exists(self.paths[DATA_FILES_PATH_KEYWORD]):
+            return []
+
         files = listdir(self.paths[DATA_FILES_PATH_KEYWORD])
         years = []
 

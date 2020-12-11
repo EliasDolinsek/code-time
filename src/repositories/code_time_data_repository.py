@@ -14,24 +14,32 @@ class CodeTimeDataRepository:
         return self.month_data[f"{month}{year}"]
 
     def _cache_month_data(self, year: int, month: int):
-        self.month_data[f"{month}{year}"] = self.data_backend.read_month_data(year=year, month=month)
+        raw_month_data = self.data_backend.read_month_data(year=year, month=month)
+        formatted_month_data = {}
 
-    def add_month_data(self, month_data, year=datetime.today().year, month=datetime.today().month,
-                       day=datetime.today().day):
+        for k, v in raw_month_data.items():
+            formatted_month_data[int(k)] = v
+
+        self.month_data[f"{month}{year}"] = formatted_month_data
+
+    def add_day_data(self, day_data, year=datetime.today().year, month=datetime.today().month,
+                     day=datetime.today().day):
         key = f"{month}{year}"
+        name = day_data["name"]
+        time = day_data["time"]
+
         if key not in self.month_data:
             self._cache_month_data(year, month)
 
         data = self.month_data[key]
-        day_str = str(day)
-
-        if "activity" not in data:
-            data["activity"] = {}
-
-        if day_str not in data["activity"]:
-            data["activity"][day_str] = []
-
-        data["activity"][day_str].append(month_data)
+        if day not in data:
+            data[day] = {}
+            data[day][name] = time
+        else:
+            if name not in data[day]:
+                data[day][name] = time
+            else:
+                data[day][name] += time
         self.data_backend.write_month_data(year, month, data)
 
     def get_days_with_data(self):
@@ -64,22 +72,16 @@ class CodeTimeDataRepository:
         return -1
 
     def get_statistics(self, year, month, day):
-        data = self.get_month_data(year, month)["activity"][str(day)]
+        data = self.get_month_data(year, month)[day]
         total_time = 0
         sorted_activities = []
 
-        for entry in data:
-            time = entry["stop_time"] - entry["start_time"]
-            total_time += time
-
-            index = self.index_of_item_dict_with_name(entry["name"], sorted_activities)
-            if index == -1:
-                sorted_activities.append({
-                    "name": entry["name"],
-                    "time": time
-                })
-            else:
-                sorted_activities[index]["time"] += time
+        for name in data:
+            total_time += data[name]
+            sorted_activities.append({
+                "name": name,
+                "time": data[name]
+            })
 
         sorted_activities = sorted(sorted_activities, key=lambda activity: activity["time"], reverse=True)
         sorted_activities = CodeTimeDataRepository._summarize_activities(sorted_activities)
@@ -114,7 +116,7 @@ class CodeTimeDataRepository:
                 names_str += " and more"
                 for activity in remaining_activities:
                     summarised_activities_time += activity["time"]
-            else:
+            elif len(remaining_activities) == 1:
                 names_str += f" and {remaining_activities[0]['name']}"
                 summarised_activities_time += remaining_activities[0]["time"]
 

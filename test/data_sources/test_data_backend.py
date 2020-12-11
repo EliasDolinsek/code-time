@@ -38,14 +38,9 @@ class DataBackendTest(unittest.TestCase):
         }
 
         self.mock_month_data = {
-            "activity": {
-                str(datetime.today().day): [
-                    {
-                        "name": "PyCharm",
-                        "start_time": 0,
-                        "end_time": 0
-                    }
-                ]
+            "1": {
+                "name": "PyCharm",
+                "time": 1000
             }
         }
 
@@ -88,7 +83,7 @@ class DataBackendTest(unittest.TestCase):
         result = self.data_backend.get_days_with_data()
         expected_result = {
             2020: {
-                12: [str(datetime.today().day)]
+                12: [1]
             }
         }
 
