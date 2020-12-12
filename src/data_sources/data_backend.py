@@ -1,37 +1,48 @@
 import json
 import os
 from os import listdir
+from datetime import datetime
 
 DATA_FILES_PATH_KEYWORD = "data_directory"
 CONFIG_FILE_PATH_KEYWORD = "config"
 
 
-def _parse_year_from_data_file_name(name: str) -> int:
-    return int(name[2:6])
+def _parse_year_from_data_file_name(name: str) -> datetime:
+    return datetime(year=int(name[2:6]), month=1, day=1)
 
 
 class DataBackend:
     def __init__(self, paths: dict):
         self.paths = paths
 
-    def read_month_data(self, year: int, month: int) -> dict:
-        file_path = self._get_data_file_path(year, month)
+    def read_month_data(self, date: datetime) -> dict:
+        file_path = self._get_data_file_path(date)
         if os.path.isfile(file_path):
             with open(file_path, "r") as file:
-                return json.loads(file.read())
+                content = json.loads(file.read())
+                formatted_month_data = {}
+
+                for k, v in content.items():
+                    formatted_month_data[int(k)] = v
+
+                return formatted_month_data
         else:
             return {}
 
-    def write_month_data(self, year, month, data):
+    def write_month_data(self, data, date: datetime):
         if not os.path.exists(self.paths[DATA_FILES_PATH_KEYWORD]):
             os.mkdir(self.paths[DATA_FILES_PATH_KEYWORD])
 
-        file_path = self._get_data_file_path(year, month)
+        file_path = self._get_data_file_path(date)
         with open(file_path, "w") as file:
             file.write(json.dumps(data))
 
-    def _get_data_file_path(self, year: int, month: int) -> str:
-        return os.path.join(self.paths[DATA_FILES_PATH_KEYWORD], f"{month}{year}.json")
+    def _get_data_file_path(self, date: datetime) -> str:
+        month_str = str(date.month)
+        if date.month < 10:
+            month_str = f"0{month_str}"
+
+        return os.path.join(self.paths[DATA_FILES_PATH_KEYWORD], f"{month_str}{date.year}.json")
 
     def read_config(self):
         with open(self.paths[CONFIG_FILE_PATH_KEYWORD], "r") as file:
@@ -45,11 +56,11 @@ class DataBackend:
         result = {}
         years = self._get_available_years()
 
-        for year in years:
-            months = self._get_available_months(year)
-            for month in months:
-                days = list(self.read_month_data(year, month).keys())
-                result[year] = {month: list(map(lambda x: int(x), days))}
+        for year_date in years:
+            months = self._get_available_months(year_date)
+            for month_date in months:
+                days = list(self.read_month_data(month_date).keys())
+                result[year_date.year] = {month_date.month: days}
 
         return result
 
@@ -68,13 +79,13 @@ class DataBackend:
         years.sort()
         return years
 
-    def _get_available_months(self, year: int) -> list:
+    def _get_available_months(self, year: datetime) -> list:
         files = listdir(self.paths[DATA_FILES_PATH_KEYWORD])
         months = []
 
         for file in files:
             if _parse_year_from_data_file_name(file) == year:
-                months.append(int(file[:2]))
+                months.append(datetime(year=year.year, month=int(file[:2]), day=1))
 
         months.sort()
         return months

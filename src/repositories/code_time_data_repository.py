@@ -14,13 +14,7 @@ class CodeTimeDataRepository:
         return self.month_data[f"{month}{year}"]
 
     def _cache_month_data(self, year: int, month: int):
-        raw_month_data = self.data_backend.read_month_data(year=year, month=month)
-        formatted_month_data = {}
-
-        for k, v in raw_month_data.items():
-            formatted_month_data[int(k)] = v
-
-        self.month_data[f"{month}{year}"] = formatted_month_data
+        self.month_data[f"{month}{year}"] = self.data_backend.read_month_data(year=year, month=month)
 
     def add_day_data(self, day_data, year=datetime.today().year, month=datetime.today().month,
                      day=datetime.today().day):

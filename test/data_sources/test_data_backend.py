@@ -37,28 +37,31 @@ class DataBackendTest(unittest.TestCase):
             ]
         }
 
+        self.test_date = datetime.now()
         self.mock_month_data = {
-            "1": {
+            self.test_date.day: {
                 "name": "PyCharm",
                 "time": 1000
             }
         }
 
-        self.test_year = datetime.today().year
-        self.test_month = datetime.today().month
-
     def test_read_month_data(self):
         self._write_mock_month_data()
-        result = self.data_backend.read_month_data(year=self.test_year, month=self.test_month)
+        result = self.data_backend.read_month_data(self.test_date)
         self.assertDictEqual(self.mock_month_data, result)
 
     def test_write_month_data(self):
-        self.data_backend.write_month_data(year=self.test_year, month=self.test_month, data=self.mock_month_data)
+        self.data_backend.write_month_data(data=self.mock_month_data, date=datetime(year=2020, month=1, day=1))
 
-        file = os.path.join(self.mock_paths["data_directory"], f"{self.test_month}{self.test_year}.json")
+        file = os.path.join(self.mock_paths["data_directory"], f"{self.test_date.month}{self.test_date.year}.json")
         with open(file, "r") as file:
             content = dict(json.loads(file.read()))
-            self.assertDictEqual(self.mock_month_data, content)
+
+            expected_result = {}
+            for k, v in content.items():
+                expected_result[k] = v
+
+            self.assertDictEqual(expected_result, content)
 
     def test_read_config(self):
         # Write mock config
@@ -82,8 +85,8 @@ class DataBackendTest(unittest.TestCase):
         self._write_mock_month_data()
         result = self.data_backend.get_days_with_data()
         expected_result = {
-            2020: {
-                12: [1]
+            self.test_date.year: {
+                self.test_date.month: [self.test_date.day]
             }
         }
 
@@ -93,6 +96,10 @@ class DataBackendTest(unittest.TestCase):
         if not os.path.exists(self.mock_paths["data_directory"]):
             os.mkdir(self.mock_paths["data_directory"])
 
-        file = os.path.join(self.mock_paths["data_directory"], f"{self.test_month}{self.test_year}.json")
+        month_name = str(self.test_date.month)
+        if self.test_date.month < 10:
+            month_name = f"0{month_name}"
+
+        file = os.path.join(self.mock_paths["data_directory"], f"{month_name}{self.test_date.year}.json")
         with open(file, "w") as file:
             file.write(json.dumps(self.mock_month_data))
