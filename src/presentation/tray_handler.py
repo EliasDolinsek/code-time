@@ -1,5 +1,4 @@
 import datetime
-import os
 
 from pathlib import Path
 from PyQt5.QtGui import *
@@ -47,49 +46,52 @@ class TrayHandler:
         tray.setContextMenu(menu)
         self.app.exec_()
 
-    def save_statistic_as_png(self, year, month, day):
-        recommended_path = str(Path.home().joinpath(f"code-time_{day}{month}{year}.png"))
+    def save_statistic_as_png(self, date):
+        recommended_path = str(Path.home().joinpath(f"code-time_{date.day}{date.month}{date.year}.png"))
         result = QFileDialog.getSaveFileName(QFileDialog(), "Save statistic", recommended_path, "Image (*.png)"),
 
         selected_path = result[0][0]
         if selected_path != "":
-            statistics = self.data_repository.get_statistics(year, month, day)
+            statistics = self.data_repository.get_statistics(date)
             self.image_creator.create_image(statistics).save(selected_path)
 
-    def add_days_statistics_to_menu(self, menu, year, month):
-        days = self.data_repository.get_days_with_data()[year][month]
+    def add_days_statistics_to_menu(self, menu, date: datetime.date):
+        days = self.data_repository.get_days_with_data()[date.year][date.month]
         for day in days:
             day_menu = menu.addMenu(str(day))
-            self.add_statistic_actions_to_menu(day_menu, year, month, int(day))
+            day_date = date.replace(day=day)
+            self.add_statistic_actions_to_menu(day_menu, day_date)
 
-    def add_months_statistics_to_menu(self, menu, year):
-        months = self.data_repository.get_months_with_data()[year]
+    def add_months_statistics_to_menu(self, menu, date: datetime.date):
+        months = self.data_repository.get_months_with_data()[date.year]
         for month in months:
             month_str = datetime.date(2000, month, 1).strftime('%B')
             current_month_menu = menu.addMenu(month_str)
-            self.add_days_statistics_to_menu(current_month_menu, year, month)
+
+            month_date = date.replace(month=month)
+            self.add_days_statistics_to_menu(current_month_menu, month_date)
 
     def add_years_statistics_to_menu(self, menu):
         years = self.data_repository.get_years_with_data()
         for year in years:
             current_year_menu = menu.addMenu(str(year))
-            self.add_months_statistics_to_menu(current_year_menu, year)
+            self.add_months_statistics_to_menu(current_year_menu, datetime.date(year, 1, 1))
 
     def add_statistics_to_menu(self, menu):
         statistics_menu = menu.addMenu("Statistics")
         today_menu = statistics_menu.addMenu("Today")
 
         today = datetime.datetime.today()
-        self.add_statistic_actions_to_menu(today_menu, today.year, today.month, today.day)
+        self.add_statistic_actions_to_menu(today_menu, today)
         self.add_years_statistics_to_menu(statistics_menu)
 
-    def show_statics_of_day(self, year: int, month: int, day: int):
-        image = self.image_creator.create_image(self.data_repository.get_statistics(year, month, day))
+    def show_statics_of_day(self, date: datetime.date):
+        image = self.image_creator.create_image(self.data_repository.get_statistics(date))
         image.show()
 
-    def add_statistic_actions_to_menu(self, menu, year, month, day):
-        menu.addAction("Show").triggered.connect(lambda: self.show_statics_of_day(year, month, day))
-        menu.addAction("Export as PNG").triggered.connect(lambda: self.save_statistic_as_png(year, month, day))
+    def add_statistic_actions_to_menu(self, menu, date):
+        menu.addAction("Show").triggered.connect(lambda: self.show_statics_of_day(date))
+        menu.addAction("Export as PNG").triggered.connect(lambda: self.save_statistic_as_png(date))
 
     def _on_quit(self):
         self.activity_tracker.on_quit()

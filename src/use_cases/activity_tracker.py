@@ -28,6 +28,7 @@ class ActivityTracker(threading.Thread):
 
     def run(self):
         last_activity = self.focus_activity_provider.get_activity_name()
+        start_date = datetime.now()
         time_diff = 0
 
         def write_if_activity_is_to_track():
@@ -35,7 +36,8 @@ class ActivityTracker(threading.Thread):
                 self.data_repository.add_day_data({
                     "name": last_activity,
                     "time": time_diff,
-                })
+                    "start_time": start_date.time()
+                }, start_date.date())
 
         while not self.quit_app:
             if not self.tracking_paused:
@@ -43,7 +45,9 @@ class ActivityTracker(threading.Thread):
                 if last_activity != current_activity:
                     write_if_activity_is_to_track()
                     last_activity = current_activity
+
                     time_diff = 0
+                    start_date = datetime.now()
             else:
                 if time_diff > 0:
                     write_if_activity_is_to_track()
