@@ -256,3 +256,192 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         }
 
         self.assertDictEqual(expected_result, result)
+
+    def test_summarize_activities_single_activity(self):
+        activities = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            }
+        ]
+
+        result = CodeTimeDataRepository.summarize_activities(activities)
+
+        self.assertListEqual(activities, result)
+
+    def test_summarize_activities_four_activities(self):
+        activities = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            },
+            {
+                "name": "IntelliJ",
+                "time": 1000
+            },
+            {
+                "name": "Terminal",
+                "time": 1000
+            },
+            {
+                "name": "CLion",
+                "time": 1000
+            }
+        ]
+
+        result = CodeTimeDataRepository.summarize_activities(activities)
+
+        self.assertListEqual(activities, result)
+
+    def test_summarize_activities_five_activities(self):
+        activities = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            },
+            {
+                "name": "IntelliJ",
+                "time": 1000
+            },
+            {
+                "name": "Terminal",
+                "time": 1000
+            },
+            {
+                "name": "CLion",
+                "time": 1000
+            },
+            {
+                "name": "XD",
+                "time": 1000
+            }
+        ]
+
+        result = CodeTimeDataRepository.summarize_activities(activities)
+
+        expected_result = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            },
+            {
+                "name": "IntelliJ",
+                "time": 1000
+            },
+            {
+                "name": "Terminal",
+                "time": 1000
+            },
+            {
+                "name": "CLion, XD",
+                "time": 2000
+            },
+        ]
+
+        self.assertListEqual(expected_result, result)
+
+    def test_summarize_activities_six_activities(self):
+        activities = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            },
+            {
+                "name": "IntelliJ",
+                "time": 1000
+            },
+            {
+                "name": "Terminal",
+                "time": 1000
+            },
+            {
+                "name": "CLion",
+                "time": 1000
+            },
+            {
+                "name": "XD",
+                "time": 1000
+            },
+            {
+                "name": "Vim",
+                "time": 1000
+            }
+        ]
+
+        result = CodeTimeDataRepository.summarize_activities(activities)
+
+        expected_result = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            },
+            {
+                "name": "IntelliJ",
+                "time": 1000
+            },
+            {
+                "name": "Terminal",
+                "time": 1000
+            },
+            {
+                "name": "CLion, XD and Vim",
+                "time": 3000
+            },
+        ]
+
+        self.assertListEqual(expected_result, result)
+
+    def test_summarize_activities_seven_activities(self):
+        activities = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            },
+            {
+                "name": "IntelliJ",
+                "time": 1000
+            },
+            {
+                "name": "Terminal",
+                "time": 1000
+            },
+            {
+                "name": "CLion",
+                "time": 1000
+            },
+            {
+                "name": "XD",
+                "time": 1000
+            },
+            {
+                "name": "Vim",
+                "time": 1000
+            },
+            {
+                "name": "VS Code",
+                "time": 1000
+            }
+        ]
+
+        result = CodeTimeDataRepository.summarize_activities(activities)
+
+        expected_result = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            },
+            {
+                "name": "IntelliJ",
+                "time": 1000
+            },
+            {
+                "name": "Terminal",
+                "time": 1000
+            },
+            {
+                "name": "CLion, XD and more",
+                "time": 4000
+            },
+        ]
+
+        self.assertListEqual(expected_result, result)
