@@ -3,6 +3,11 @@ class MonthDataFileNotFoundError(Exception):
     pass
 
 
+class ConfigFileNotFoundError(Exception):
+    """Raised when config file is not being found"""
+    pass
+
+
 class EmptyMonthDataError(Exception):
     """Raised when trying to write empty month data"""
     pass

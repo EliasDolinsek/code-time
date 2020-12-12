@@ -3,7 +3,7 @@ import json
 import os
 from os import listdir
 
-from src.data_sources.errors import MonthDataFileNotFoundError, EmptyMonthDataError
+from src.data_sources.errors import MonthDataFileNotFoundError, EmptyMonthDataError, ConfigFileNotFoundError
 
 DATA_FILES_PATH_KEYWORD = "data_directory"
 CONFIG_FILE_PATH_KEYWORD = "config"
@@ -51,8 +51,11 @@ class DataBackend:
             file.write(json.dumps(data))
 
     def read_config(self):
-        with open(self.paths[CONFIG_FILE_PATH_KEYWORD], "r") as file:
-            return json.load(file)
+        try:
+            with open(self.paths[CONFIG_FILE_PATH_KEYWORD], "r") as file:
+                return json.load(file)
+        except FileNotFoundError:
+            raise ConfigFileNotFoundError
 
     def write_config(self, config):
         with open(self.paths[CONFIG_FILE_PATH_KEYWORD], "w") as file:
