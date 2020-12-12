@@ -1,7 +1,9 @@
+import datetime
 import json
 import os
 from os import listdir
-from datetime import datetime
+
+from src.data_sources.errors import MonthDataFileNotFoundError
 
 DATA_FILES_PATH_KEYWORD = "data_directory"
 CONFIG_FILE_PATH_KEYWORD = "config"
@@ -15,9 +17,10 @@ class DataBackend:
     def __init__(self, paths: dict):
         self.paths = paths
 
-    def read_month_data(self, date: datetime) -> dict:
-        file_path = self._get_data_file_path(date)
-        if os.path.isfile(file_path):
+    def read_month_data(self, date: datetime.date) -> dict:
+        file_path = self.get_data_file_path(date)
+        print(file_path)
+        if os.path.exists(file_path):
             with open(file_path, "r") as file:
                 content = json.loads(file.read())
                 formatted_month_data = {}
@@ -27,22 +30,22 @@ class DataBackend:
 
                 return formatted_month_data
         else:
-            return {}
+            raise MonthDataFileNotFoundError
 
     def write_month_data(self, data, date: datetime):
         if not os.path.exists(self.paths[DATA_FILES_PATH_KEYWORD]):
             os.mkdir(self.paths[DATA_FILES_PATH_KEYWORD])
 
-        file_path = self._get_data_file_path(date)
+        file_path = self.get_data_file_path(date)
         with open(file_path, "w") as file:
             file.write(json.dumps(data))
 
-    def _get_data_file_path(self, date: datetime) -> str:
+    def get_data_file_path(self, date: datetime.date) -> str:
         month_str = str(date.month)
         if date.month < 10:
             month_str = f"0{month_str}"
 
-        return os.path.join(self.paths[DATA_FILES_PATH_KEYWORD], f"{month_str}{date.year}.json")
+        return os.path.join(self.paths[DATA_FILES_PATH_KEYWORD], f"{month_str}-{date.year}.json")
 
     def read_config(self):
         with open(self.paths[CONFIG_FILE_PATH_KEYWORD], "r") as file:
