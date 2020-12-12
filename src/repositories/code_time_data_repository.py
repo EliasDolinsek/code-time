@@ -4,7 +4,7 @@ from src.data_sources.data_backend import DataBackend
 
 
 class CodeTimeDataRepository:
-    month_data = {}
+    cached_month_data = {}
 
     def __init__(self, data_backend: DataBackend):
         self.data_backend = data_backend
@@ -16,13 +16,13 @@ class CodeTimeDataRepository:
     def get_month_data(self, date: datetime.date):
         cache_key = self.get_cache_key(date)
 
-        if cache_key not in self.month_data:
+        if cache_key not in self.cached_month_data:
             self.cache_month_data(date)
 
-        return self.month_data[cache_key]
+        return self.cached_month_data[cache_key]
 
     def cache_month_data(self, date: datetime.date):
-        self.month_data[self.get_cache_key(date)] = self.data_backend.read_month_data(date)
+        self.cached_month_data[self.get_cache_key(date)] = self.data_backend.read_month_data(date)
 
     def add_day_data(self, data: dict, date: datetime.date):
         """
@@ -45,10 +45,10 @@ class CodeTimeDataRepository:
         if date + datetime.timedelta(milliseconds=time) > date:
             print("OK")
 
-        if cache_key not in self.month_data:
+        if cache_key not in self.cached_month_data:
             self.cache_month_data(date)
 
-        cached_data = self.month_data[cache_key]
+        cached_data = self.cached_month_data[cache_key]
 
         day = date.day
         if date.day not in cached_data:
