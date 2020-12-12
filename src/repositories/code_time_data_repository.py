@@ -17,6 +17,10 @@ class CodeTimeDataRepository:
         self.cached_month_data[self.get_cache_key(date)] = self.data_backend.read_month_data(date)
 
     def get_month_data(self, date: datetime.date):
+        """
+        :param date: date of desired month
+        :return: month data using DataBackend
+        """
         cache_key = self.get_cache_key(date)
 
         if cache_key not in self.cached_month_data:
@@ -96,12 +100,12 @@ class CodeTimeDataRepository:
     def write_config(self, config):
         self.data_backend.write_config(config)
 
-    def get_statistics(self, year, month, day):
-        data = self.get_month_data(year, month)[day]
+    def get_statistics(self, date: datetime.date):
+        data = self.get_month_data(date)[date.day]
         total_time = 0
         sorted_activities = []
 
-        for name in data:
+        for name in data.keys():
             total_time += data[name]
             sorted_activities.append({
                 "name": name,
@@ -109,19 +113,19 @@ class CodeTimeDataRepository:
             })
 
         sorted_activities = sorted(sorted_activities, key=lambda activity: activity["time"], reverse=True)
-        sorted_activities = CodeTimeDataRepository._summarize_activities(sorted_activities)
+        sorted_activities = CodeTimeDataRepository.summarize_activities(sorted_activities)
 
         for d in sorted_activities:
             d["progress"] = d["time"] / total_time
 
         return {
-            "date": datetime(year, month, day).strftime("%b %d %Y"),
+            "date": date.strftime("%b %d %Y"),
             "total_time": total_time,
             "activities": sorted_activities
         }
 
     @staticmethod
-    def _summarize_activities(activities):
+    def summarize_activities(activities):
         if len(activities) > 3:
             summarised_activities = activities[3:]
             summarised_activities_time = 0

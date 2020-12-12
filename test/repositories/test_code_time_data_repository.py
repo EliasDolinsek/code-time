@@ -223,3 +223,36 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         data_repository.write_config(mock_config)
 
         data_backend.write_config.assert_called_once_with(mock_config)
+
+    def test_get_statistics(self):
+        mock_month_data = {
+            1: {
+                "PyCharm": 4000,
+                "IntelliJ": 6000
+            }
+        }
+
+        data_backend = DataBackend({})
+        data_backend.read_month_data = MagicMock(return_value=mock_month_data)
+
+        data_repository = CodeTimeDataRepository(data_backend)
+        result = data_repository.get_statistics(datetime.date(2020, 1, 1))
+
+        expected_result = {
+            "date": "Jan 01 2020",
+            "total_time": 10000,
+            "activities": [
+                {
+                    "name": "IntelliJ",
+                    "time": 6000,
+                    "progress": 0.6
+                },
+                {
+                    "name": "PyCharm",
+                    "time": 4000,
+                    "progress": 0.4
+                }
+            ]
+        }
+
+        self.assertDictEqual(expected_result, result)

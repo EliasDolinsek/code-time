@@ -22,8 +22,18 @@ class DataBackend:
         return os.path.join(self.paths[DATA_FILES_PATH_KEYWORD], f"{month_str}-{date.year}.json")
 
     def read_month_data(self, date: datetime.date) -> dict:
+        """
+        example format of month data which is being returned:
+        {
+            1: {
+                "PyCharm": 1000,
+                "IntelliJ": 2000
+            }
+        }
+        :param date: date of desired month
+        :return: dict of month data
+        """
         file_path = self.get_data_file_path(date)
-        print(file_path)
         if os.path.exists(file_path):
             with open(file_path, "r") as file:
                 content = json.loads(file.read())
