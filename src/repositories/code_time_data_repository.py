@@ -96,14 +96,6 @@ class CodeTimeDataRepository:
     def write_config(self, config):
         self.data_backend.write_config(config)
 
-    @staticmethod
-    def index_of_item_dict_with_name(name, activities):
-        for i, d in enumerate(activities):
-            if d["name"] == name:
-                return i
-
-        return -1
-
     def get_statistics(self, year, month, day):
         data = self.get_month_data(year, month)[day]
         total_time = 0

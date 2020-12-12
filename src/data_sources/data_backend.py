@@ -62,6 +62,15 @@ class DataBackend:
             file.write(json.dumps(config))
 
     def get_days_with_data(self):
+        """
+        return format example:
+        {
+            2020: {
+                1: [1,2,3]
+            }
+        }
+        :return: list of days with tracking data
+        """
         result = {}
         years = self.get_existing_years()
 

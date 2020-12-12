@@ -151,3 +151,18 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
 
         data_backend.read_month_data.assert_called_once_with(datetime.date(2020, 1, 2))
         data_backend.write_month_data.assert_has_calls([call(expected_month_data, test_date)], any_order=True)
+
+    def test_get_days_with_data(self):
+        data_backend = DataBackend({})
+
+        mock_return = {
+            2020: {
+                1: [1, 2, 3]
+            }
+        }
+
+        data_backend.get_days_with_data = MagicMock(return_value=mock_return)
+        data_repository = CodeTimeDataRepository(data_backend)
+
+        result = data_repository.get_days_with_data()
+        self.assertEqual(mock_return, result)
