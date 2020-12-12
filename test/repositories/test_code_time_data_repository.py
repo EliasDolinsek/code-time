@@ -1,5 +1,6 @@
+import datetime
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call
 
 from src.data_sources.data_backend import DataBackend
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
@@ -7,172 +8,440 @@ from src.repositories.code_time_data_repository import CodeTimeDataRepository
 
 class CodeTimeDataRepositoryTest(unittest.TestCase):
 
-    def test_get_month_data(self):
-        mock_result = {
+    @staticmethod
+    def get_default_month_data():
+        return {
             1: {
-                "PyCharm": 1000
+                "PyCharm": 4000,
+                "IntelliJ": 1000
             }
         }
 
+    def test_get_cache_key(self):
         data_backend = DataBackend({})
-        data_backend.read_month_data = MagicMock(return_value=mock_result)
+        repository = CodeTimeDataRepository(data_backend)
+        test_date = datetime.date(2020, 1, 1)
 
-        data_model = CodeTimeDataRepository(data_backend)
-        self.assertDictEqual(mock_result, data_model.get_month_data())
+        result = repository.get_cache_key(test_date)
+        self.assertEqual("1-2020", result)
 
-    def test_add_month_data(self):
-        mock_read_month_data_result = {
-            1: {
-                "PyCharm": 1000,
-            }
+    def test_cache_month_data(self):
+        data_backend = DataBackend({})
+        test_date = datetime.date(2020, 1, 1)
+
+        data_backend.read_month_data = MagicMock(return_value=self.get_default_month_data())
+        repository = CodeTimeDataRepository(data_backend)
+
+        repository.cache_month_data(test_date)
+
+        expected_result = {
+            "1-2020": self.get_default_month_data()
         }
 
-        additional_activity = {
+        self.assertEqual(expected_result, repository.cached_month_data)
+
+    def test_get_month_data_cached(self):
+        data_backend = DataBackend({})
+        test_date = datetime.date(2020, 1, 1)
+
+        data_backend.read_month_data = MagicMock()
+
+        repository = CodeTimeDataRepository(data_backend)
+        repository.cached_month_data["1-2020"] = self.get_default_month_data()
+
+        result = repository.get_month_data(test_date)
+
+        data_backend.read_month_data.assert_not_called()
+        self.assertEqual(self.get_default_month_data(), result)
+
+    def test_get_month_data_not_cached(self):
+        data_backend = DataBackend({})
+        test_date = datetime.date(2020, 1, 1)
+
+        data_backend.read_month_data = MagicMock(return_value=self.get_default_month_data())
+        repository = CodeTimeDataRepository(data_backend)
+
+        result = repository.get_month_data(test_date)
+
+        data_backend.read_month_data.assert_called_once_with(test_date)
+        self.assertEqual(self.get_default_month_data(), result)
+
+    @staticmethod
+    def get_default_day_data_to_add(start_time=datetime.time(0, 0, 0)):
+        return {
             "name": "PyCharm",
-            "time": 1000
+            "time": 4000,
+            "start_time": start_time
         }
 
-        expected_result = mock_read_month_data_result.copy()
-        expected_result[1]["PyCharm"] += additional_activity["time"]
-
+    def test_add_day_data_new_day(self):
         data_backend = DataBackend({})
-        data_backend.read_month_data = MagicMock(return_value=mock_read_month_data_result)
+        data_backend.read_month_data = MagicMock(return_value=self.get_default_month_data())
         data_backend.write_month_data = MagicMock()
 
-        data_model = CodeTimeDataRepository(data_backend)
-        data_model.add_day_data(additional_activity, year=2020, month=1, day=1)
+        repository = CodeTimeDataRepository(data_backend)
+        test_date = datetime.datetime(2020, 2, 2)
 
-        data_backend.read_month_data.assert_called_with(year=2020, month=1)
-        data_backend.write_month_data.assert_called_with(2020, 1, expected_result)
+        repository.add_day_data(self.get_default_day_data_to_add(), test_date)
+
+        expected_month_data = self.get_default_month_data()
+        expected_month_data[2] = {}
+        expected_month_data[2]["PyCharm"] = 4000
+
+        data_backend.read_month_data.assert_called_once_with(test_date)
+        data_backend.write_month_data.assert_called_once_with(expected_month_data, test_date)
+
+    def test_add_day_data_new_activity(self):
+        data_backend = DataBackend({})
+        data_backend.read_month_data = MagicMock(return_value=self.get_default_month_data())
+        data_backend.write_month_data = MagicMock()
+
+        repository = CodeTimeDataRepository(data_backend)
+        test_date = datetime.date(2020, 1, 1)
+
+        day_data_to_add = {
+            "name": "Terminal",
+            "time": 4000,
+            "start_time": datetime.time(0, 0, 0)
+        }
+        repository.add_day_data(day_data_to_add, test_date)
+
+        expected_month_data = self.get_default_month_data()
+        expected_month_data[1]["Terminal"] = 4000
+
+        data_backend.read_month_data.assert_called_once_with(test_date)
+        data_backend.write_month_data.assert_called_once_with(expected_month_data, test_date)
+
+    def test_add_day_data_activity(self):
+        data_backend = DataBackend({})
+        data_backend.read_month_data = MagicMock(return_value=self.get_default_month_data())
+        data_backend.write_month_data = MagicMock()
+
+        repository = CodeTimeDataRepository(data_backend)
+        test_date = datetime.date(2020, 1, 1)
+
+        repository.add_day_data(self.get_default_day_data_to_add(), test_date)
+
+        expected_month_data = self.get_default_month_data()
+        expected_month_data[1]["PyCharm"] = 8000
+
+        data_backend.read_month_data.assert_called_once_with(test_date)
+        data_backend.write_month_data.assert_called_once_with(expected_month_data, test_date)
+
+    def test_add_day_data_activity_exceeding_current_day(self):
+        data_backend = DataBackend({})
+        data_backend.read_month_data = MagicMock(return_value=self.get_default_month_data())
+        data_backend.write_month_data = MagicMock()
+
+        repository = CodeTimeDataRepository(data_backend)
+        test_date = datetime.date(2020, 1, 1)
+
+        test_start_time = datetime.time(23, 59, 59)
+        repository.add_day_data(self.get_default_day_data_to_add(test_start_time), test_date)
+
+        expected_month_data = {
+            1: {
+                "PyCharm": 5000,
+                "IntelliJ": 1000
+            },
+            2: {
+                "PyCharm": 3000
+            }
+        }
+
+        data_backend.read_month_data.assert_called_once_with(datetime.date(2020, 1, 2))
+        data_backend.write_month_data.assert_has_calls([call(expected_month_data, test_date)], any_order=True)
 
     def test_get_days_with_data(self):
-        mock_data = {
-            2020: {
-                12: [1]
-            }
-        }
         data_backend = DataBackend({})
-        data_backend.get_days_with_data = MagicMock(return_value=mock_data)
 
-        data_model = CodeTimeDataRepository(data_backend)
-        result = data_model.get_days_with_data()
-        self.assertDictEqual(mock_data, result)
-
-    def test_get_months_with_data(self):
-        mock_data = {
+        mock_return = {
             2020: {
-                12: [0]
-            },
-            2019: {
-                12: [0]
+                1: [1, 2, 3]
             }
         }
 
-        expected_data = {
-            2020: [
-                12
-            ],
-            2019: [
-                12
-            ]
-        }
+        data_backend.get_days_with_data = MagicMock(return_value=mock_return)
+        data_repository = CodeTimeDataRepository(data_backend)
 
-        data_backend = DataBackend({})
-        data_backend.get_days_with_data = MagicMock(return_value=mock_data)
-
-        data_model = CodeTimeDataRepository(data_backend)
-        result = data_model.get_months_with_data()
-
-        self.assertDictEqual(expected_data, result)
+        result = data_repository.get_days_with_data()
+        self.assertEqual(mock_return, result)
 
     def test_get_years_with_data(self):
-        mock_data = {
+        data_backend = DataBackend({})
+
+        mock_return = {
             2020: {
-                12: [0]
-            },
-            2019: {
-                12: [0]
+                1: [1, 2, 3]
             }
         }
 
+        data_backend.get_days_with_data = MagicMock(return_value=mock_return)
+        data_repository = CodeTimeDataRepository(data_backend)
+
+        result = data_repository.get_years_with_data()
+        self.assertEqual([2020], result)
+
+    def test_get_months_with_data(self):
         data_backend = DataBackend({})
-        data_backend.get_days_with_data = MagicMock(return_value=mock_data)
 
-        data_model = CodeTimeDataRepository(data_backend)
-        result = data_model.get_years_with_data()
+        mock_return = {
+            2020: {
+                1: [1, 2, 3]
+            }
+        }
 
-        self.assertListEqual([2020, 2019], result)
+        data_backend.get_days_with_data = MagicMock(return_value=mock_return)
+        data_repository = CodeTimeDataRepository(data_backend)
+
+        result = data_repository.get_months_with_data()
+
+        expected_result = {
+            2020: [1]
+        }
+
+        self.assertEqual(expected_result, result)
+
+    def test_get_config(self):
+        mock_config = {"enabled": True}
+
+        data_backend = DataBackend({})
+        data_backend.read_config = MagicMock(return_value=mock_config)
+
+        data_repository = CodeTimeDataRepository(data_backend)
+        result = data_repository.get_config()
+
+        self.assertDictEqual(mock_config, result)
 
     def test_write_config(self):
-        config = {
-            "test": True
-        }
+        mock_config = {"enabled": True}
 
         data_backend = DataBackend({})
         data_backend.write_config = MagicMock()
 
-        data_model = CodeTimeDataRepository(data_backend)
-        data_model.write_config(config)
+        data_repository = CodeTimeDataRepository(data_backend)
+        data_repository.write_config(mock_config)
 
-        data_backend.write_config.assert_called_with(config)
-
-    def test_get_config(self):
-        config = {
-            "test": True
-        }
-
-        data_backend = DataBackend({})
-        data_backend.read_config = MagicMock(return_value=config)
-
-        data_model = CodeTimeDataRepository(data_backend)
-        result = data_model.get_config()
-
-        self.assertDictEqual(config, result)
+        data_backend.write_config.assert_called_once_with(mock_config)
 
     def test_get_statistics(self):
         mock_month_data = {
             1: {
-                "IntelliJ": 10000,
-                "PyCharm": 80000,
-                "VS Code": 5000,
-                "Vim": 3000,
-                "WebStorm": 1500,
-                "Terminal": 500
+                "PyCharm": 4000,
+                "IntelliJ": 6000
             }
         }
 
         data_backend = DataBackend({})
         data_backend.read_month_data = MagicMock(return_value=mock_month_data)
 
-        data_model = CodeTimeDataRepository(data_backend)
-        result = data_model.get_statistics(year=2021, month=1, day=1)
+        data_repository = CodeTimeDataRepository(data_backend)
+        result = data_repository.get_statistics(datetime.date(2020, 1, 1))
 
         expected_result = {
-            "date": "Jan 01 2021",
-            "total_time": 100000.0,
+            "date": "Jan 01 2020",
+            "total_time": 10000,
             "activities": [
                 {
-                    "name": "PyCharm",
-                    "time": 80000,
-                    "progress": 0.8
-                },
-                {
                     "name": "IntelliJ",
-                    "time": 10000,
-                    "progress": 0.1
+                    "time": 6000,
+                    "progress": 0.6
                 },
                 {
-                    "name": "VS Code",
-                    "time": 5000,
-                    "progress": 0.05
-                },
-                {
-                    "name": "Vim, WebStorm and Terminal",
-                    "time": 5000,
-                    "progress": 0.05
-                },
+                    "name": "PyCharm",
+                    "time": 4000,
+                    "progress": 0.4
+                }
             ]
         }
 
-        self.maxDiff = None
         self.assertDictEqual(expected_result, result)
+
+    def test_summarize_activities_single_activity(self):
+        activities = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            }
+        ]
+
+        result = CodeTimeDataRepository.summarize_activities(activities)
+
+        self.assertListEqual(activities, result)
+
+    def test_summarize_activities_four_activities(self):
+        activities = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            },
+            {
+                "name": "IntelliJ",
+                "time": 1000
+            },
+            {
+                "name": "Terminal",
+                "time": 1000
+            },
+            {
+                "name": "CLion",
+                "time": 1000
+            }
+        ]
+
+        result = CodeTimeDataRepository.summarize_activities(activities)
+
+        self.assertListEqual(activities, result)
+
+    def test_summarize_activities_five_activities(self):
+        activities = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            },
+            {
+                "name": "IntelliJ",
+                "time": 1000
+            },
+            {
+                "name": "Terminal",
+                "time": 1000
+            },
+            {
+                "name": "CLion",
+                "time": 1000
+            },
+            {
+                "name": "XD",
+                "time": 1000
+            }
+        ]
+
+        result = CodeTimeDataRepository.summarize_activities(activities)
+
+        expected_result = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            },
+            {
+                "name": "IntelliJ",
+                "time": 1000
+            },
+            {
+                "name": "Terminal",
+                "time": 1000
+            },
+            {
+                "name": "CLion, XD",
+                "time": 2000
+            },
+        ]
+
+        self.assertListEqual(expected_result, result)
+
+    def test_summarize_activities_six_activities(self):
+        activities = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            },
+            {
+                "name": "IntelliJ",
+                "time": 1000
+            },
+            {
+                "name": "Terminal",
+                "time": 1000
+            },
+            {
+                "name": "CLion",
+                "time": 1000
+            },
+            {
+                "name": "XD",
+                "time": 1000
+            },
+            {
+                "name": "Vim",
+                "time": 1000
+            }
+        ]
+
+        result = CodeTimeDataRepository.summarize_activities(activities)
+
+        expected_result = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            },
+            {
+                "name": "IntelliJ",
+                "time": 1000
+            },
+            {
+                "name": "Terminal",
+                "time": 1000
+            },
+            {
+                "name": "CLion, XD and Vim",
+                "time": 3000
+            },
+        ]
+
+        self.assertListEqual(expected_result, result)
+
+    def test_summarize_activities_seven_activities(self):
+        activities = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            },
+            {
+                "name": "IntelliJ",
+                "time": 1000
+            },
+            {
+                "name": "Terminal",
+                "time": 1000
+            },
+            {
+                "name": "CLion",
+                "time": 1000
+            },
+            {
+                "name": "XD",
+                "time": 1000
+            },
+            {
+                "name": "Vim",
+                "time": 1000
+            },
+            {
+                "name": "VS Code",
+                "time": 1000
+            }
+        ]
+
+        result = CodeTimeDataRepository.summarize_activities(activities)
+
+        expected_result = [
+            {
+                "name": "PyCharm",
+                "time": 1000
+            },
+            {
+                "name": "IntelliJ",
+                "time": 1000
+            },
+            {
+                "name": "Terminal",
+                "time": 1000
+            },
+            {
+                "name": "CLion, XD and more",
+                "time": 4000
+            },
+        ]
+
+        self.assertListEqual(expected_result, result)

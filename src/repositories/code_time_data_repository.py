@@ -1,46 +1,83 @@
-from datetime import datetime
+import datetime
 
 from src.data_sources.data_backend import DataBackend
 
 
 class CodeTimeDataRepository:
-    month_data = {}
+    cached_month_data = {}
 
     def __init__(self, data_backend: DataBackend):
         self.data_backend = data_backend
 
-    def get_month_data(self, year=datetime.today().year, month=datetime.today().month):
-        self._cache_month_data(year, month)
-        return self.month_data[f"{month}{year}"]
+    @staticmethod
+    def get_cache_key(date: datetime.date):
+        return f"{date.month}-{date.year}"
 
-    def _cache_month_data(self, year: int, month: int):
-        raw_month_data = self.data_backend.read_month_data(year=year, month=month)
-        formatted_month_data = {}
+    def cache_month_data(self, date: datetime.date):
+        self.cached_month_data[self.get_cache_key(date)] = self.data_backend.read_month_data(date)
 
-        for k, v in raw_month_data.items():
-            formatted_month_data[int(k)] = v
+    def get_month_data(self, date: datetime.date):
+        """
+        :param date: date of desired month
+        :return: month data using DataBackend
+        """
+        cache_key = self.get_cache_key(date)
 
-        self.month_data[f"{month}{year}"] = formatted_month_data
+        if cache_key not in self.cached_month_data:
+            self.cache_month_data(date)
 
-    def add_day_data(self, day_data, year=datetime.today().year, month=datetime.today().month,
-                     day=datetime.today().day):
-        key = f"{month}{year}"
-        name = day_data["name"]
-        time = day_data["time"]
+        return self.cached_month_data[cache_key]
 
-        if key not in self.month_data:
-            self._cache_month_data(year, month)
+    def add_day_data(self, data: dict, date: datetime.date):
+        """
+        Saves time tracking data
 
-        data = self.month_data[key]
-        if day not in data:
-            data[day] = {}
-            data[day][name] = time
+        Example structure for data argument:
+        data: dict
+            {
+                "name": "PyCharm",
+                "time": 3000,
+                "start_time": datetime.time
+            }
+        """
+
+        cache_key = self.get_cache_key(date)
+
+        name = data["name"]
+        time = data["time"]
+        start_time = data["start_time"]
+
+        start_datetime = datetime.datetime.combine(date, start_time)
+        if (start_datetime + datetime.timedelta(milliseconds=time)).date() > date:
+            next_day_date = datetime.datetime.combine(date, start_time) + datetime.timedelta(days=1)
+            next_day_date = next_day_date.replace(hour=0, minute=0, second=0)
+            time_diff = next_day_date - start_datetime
+
+            day_data = {
+                "name": name,
+                "time": time - time_diff.seconds * 1000,
+                "start_time": datetime.time(0, 0, 0)
+            }
+
+            self.add_day_data(day_data, next_day_date.date())
+            time = time_diff.seconds * 1000
+
+        if cache_key not in self.cached_month_data:
+            self.cache_month_data(date)
+
+        cached_data = self.cached_month_data[cache_key]
+
+        day = date.day
+        if date.day not in cached_data:
+            cached_data[day] = {}
+
+        if name not in cached_data[day]:
+            cached_data[day][name] = time
         else:
-            if name not in data[day]:
-                data[day][name] = time
-            else:
-                data[day][name] += time
-        self.data_backend.write_month_data(year, month, data)
+            cached_data[day][name] += time
+
+        self.cached_month_data[cache_key] = cached_data
+        self.data_backend.write_month_data(cached_data, date)
 
     def get_days_with_data(self):
         return self.data_backend.get_days_with_data()
@@ -63,20 +100,12 @@ class CodeTimeDataRepository:
     def write_config(self, config):
         self.data_backend.write_config(config)
 
-    @staticmethod
-    def index_of_item_dict_with_name(name, activities):
-        for i, d in enumerate(activities):
-            if d["name"] == name:
-                return i
-
-        return -1
-
-    def get_statistics(self, year, month, day):
-        data = self.get_month_data(year, month)[day]
+    def get_statistics(self, date: datetime.date):
+        data = self.get_month_data(date)[date.day]
         total_time = 0
         sorted_activities = []
 
-        for name in data:
+        for name in data.keys():
             total_time += data[name]
             sorted_activities.append({
                 "name": name,
@@ -84,19 +113,19 @@ class CodeTimeDataRepository:
             })
 
         sorted_activities = sorted(sorted_activities, key=lambda activity: activity["time"], reverse=True)
-        sorted_activities = CodeTimeDataRepository._summarize_activities(sorted_activities)
+        sorted_activities = CodeTimeDataRepository.summarize_activities(sorted_activities)
 
         for d in sorted_activities:
             d["progress"] = d["time"] / total_time
 
         return {
-            "date": datetime(year, month, day).strftime("%b %d %Y"),
+            "date": date.strftime("%b %d %Y"),
             "total_time": total_time,
             "activities": sorted_activities
         }
 
     @staticmethod
-    def _summarize_activities(activities):
+    def summarize_activities(activities):
         if len(activities) > 3:
             summarised_activities = activities[3:]
             summarised_activities_time = 0
