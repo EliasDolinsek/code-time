@@ -89,12 +89,12 @@ class DataBackend:
         return years
 
     def get_existing_months(self, year: datetime) -> list:
-        files = listdir(self.paths[DATA_FILES_PATH_KEYWORD])
         months = []
 
+        files = listdir(self.paths[DATA_FILES_PATH_KEYWORD])
         for file in files:
             if self.parse_year_from_data_file_name(file) == year:
-                months.append(datetime(year=year.year, month=int(file[:2]), day=1))
+                months.append(int(file[:file.index("-")]))
 
         months.sort()
         return months

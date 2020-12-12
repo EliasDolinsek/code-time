@@ -189,3 +189,31 @@ class DataBackendTest(unittest.TestCase):
         data_backend = DataBackend(paths)
         result = data_backend.get_existing_years()
         self.assertEqual([], result)
+
+    def test_get_existing_months(self):
+        file_names = ["12-2020.json", "01-2021.json", "09-2019.json"]
+        for f_name in file_names:
+            with open(os.path.join(self.data_directory, f_name), "w") as _:
+                pass
+
+        paths = {
+            DATA_FILES_PATH_KEYWORD: self.data_directory
+        }
+
+        data_backend = DataBackend(paths)
+        result = data_backend.get_existing_months(2020)
+        self.assertEqual([12], result)
+
+    def test_get_existing_months_no_matching_months(self):
+        file_names = ["12-2020.json", "01-2021.json", "09-2019.json"]
+        for f_name in file_names:
+            with open(os.path.join(self.data_directory, f_name), "w") as _:
+                pass
+
+        paths = {
+            DATA_FILES_PATH_KEYWORD: self.data_directory
+        }
+
+        data_backend = DataBackend(paths)
+        result = data_backend.get_existing_months(2022)
+        self.assertEqual([], result)
