@@ -19,6 +19,32 @@ class DataBackendTest(unittest.TestCase):
         if not os.path.exists(self.data_directory):
             os.mkdir(self.data_directory)
 
+    def test_get_data_file_path_single_digit_month(self):
+        paths = {
+            DATA_FILES_PATH_KEYWORD: self.data_directory
+        }
+
+        test_date = date(2020, 1, 1)
+        data_backend = DataBackend(paths)
+
+        expected_result = os.path.join(self.data_directory, "01-2020.json")
+        result = data_backend.get_data_file_path(test_date)
+
+        self.assertEqual(expected_result, result)
+
+    def test_get_data_file_path_double_digit_month(self):
+        paths = {
+            DATA_FILES_PATH_KEYWORD: self.data_directory
+        }
+
+        test_date = date(2020, 10, 1)
+        data_backend = DataBackend(paths)
+
+        expected_result = os.path.join(self.data_directory, "10-2020.json")
+        result = data_backend.get_data_file_path(test_date)
+
+        self.assertEqual(expected_result, result)
+
     def test_read_month_data_file_not_available(self):
         paths = {
             DATA_FILES_PATH_KEYWORD: "/this/path/does/not/exist"

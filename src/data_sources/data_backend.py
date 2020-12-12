@@ -17,6 +17,13 @@ class DataBackend:
     def __init__(self, paths: dict):
         self.paths = paths
 
+    def get_data_file_path(self, date: datetime.date) -> str:
+        month_str = str(date.month)
+        if date.month < 10:
+            month_str = f"0{month_str}"
+
+        return os.path.join(self.paths[DATA_FILES_PATH_KEYWORD], f"{month_str}-{date.year}.json")
+
     def read_month_data(self, date: datetime.date) -> dict:
         file_path = self.get_data_file_path(date)
         print(file_path)
@@ -39,13 +46,6 @@ class DataBackend:
         file_path = self.get_data_file_path(date)
         with open(file_path, "w") as file:
             file.write(json.dumps(data))
-
-    def get_data_file_path(self, date: datetime.date) -> str:
-        month_str = str(date.month)
-        if date.month < 10:
-            month_str = f"0{month_str}"
-
-        return os.path.join(self.paths[DATA_FILES_PATH_KEYWORD], f"{month_str}-{date.year}.json")
 
     def read_config(self):
         with open(self.paths[CONFIG_FILE_PATH_KEYWORD], "r") as file:
