@@ -166,3 +166,18 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
 
         result = data_repository.get_days_with_data()
         self.assertEqual(mock_return, result)
+
+    def test_get_years_with_data(self):
+        data_backend = DataBackend({})
+
+        mock_return = {
+            2020: {
+                1: [1, 2, 3]
+            }
+        }
+
+        data_backend.get_days_with_data = MagicMock(return_value=mock_return)
+        data_repository = CodeTimeDataRepository(data_backend)
+
+        result = data_repository.get_years_with_data()
+        self.assertEqual([2020], result)
