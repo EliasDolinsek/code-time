@@ -63,17 +63,17 @@ class DataBackend:
 
     def get_days_with_data(self):
         result = {}
-        years = self.get_available_years()
+        years = self.get_existing_years()
 
         for year_date in years:
-            months = self.get_available_months(year_date)
+            months = self.get_existing_months(year_date)
             for month_date in months:
                 days = list(self.read_month_data(month_date).keys())
                 result[year_date.year] = {month_date.month: days}
 
         return result
 
-    def get_available_years(self) -> list:
+    def get_existing_years(self) -> list:
         if not os.path.exists(self.paths[DATA_FILES_PATH_KEYWORD]):
             return []
 
@@ -88,7 +88,7 @@ class DataBackend:
         years.sort()
         return years
 
-    def get_available_months(self, year: datetime) -> list:
+    def get_existing_months(self, year: datetime) -> list:
         files = listdir(self.paths[DATA_FILES_PATH_KEYWORD])
         months = []
 

@@ -3,6 +3,7 @@ import os
 import tempfile
 import unittest
 from datetime import date
+from os import listdir
 
 from src.data_sources.data_backend import DataBackend, DATA_FILES_PATH_KEYWORD, CONFIG_FILE_PATH_KEYWORD
 from src.data_sources.errors import MonthDataFileNotFoundError, EmptyMonthDataError, ConfigFileNotFoundError, \
@@ -19,6 +20,11 @@ class DataBackendTest(unittest.TestCase):
         self.data_directory = os.path.join(tempfile.gettempdir(), "data/")
         if not os.path.exists(self.data_directory):
             os.mkdir(self.data_directory)
+
+    def tearDown(self) -> None:
+        for file in listdir(self.data_directory):
+            os.remove(os.path.join(self.data_directory, file))
+        os.removedirs(self.data_directory)
 
     def test_get_data_file_path_single_digit_month(self):
         paths = {
@@ -160,3 +166,26 @@ class DataBackendTest(unittest.TestCase):
         name = "122020.json"
         data_backend = DataBackend({})
         self.assertRaises(InvalidMonthDataFileNameError, data_backend.parse_year_from_data_file_name, name)
+
+    def test_get_existing_years(self):
+        file_names = ["12-2020.json", "01-2021.json", "09-2019.json"]
+        for f_name in file_names:
+            with open(os.path.join(self.data_directory, f_name), "w") as _:
+                pass
+
+        paths = {
+            DATA_FILES_PATH_KEYWORD: self.data_directory
+        }
+
+        data_backend = DataBackend(paths)
+        result = data_backend.get_existing_years()
+        self.assertEqual([2019, 2020, 2021], result)
+
+    def test_get_existing_years_no_years(self):
+        paths = {
+            DATA_FILES_PATH_KEYWORD: self.data_directory
+        }
+
+        data_backend = DataBackend(paths)
+        result = data_backend.get_existing_years()
+        self.assertEqual([], result)
