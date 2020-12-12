@@ -74,11 +74,15 @@ class DataBackend:
         result = {}
         years = self.get_existing_years()
 
-        for year_date in years:
-            months = self.get_existing_months(year_date)
-            for month_date in months:
-                days = list(self.read_month_data(month_date).keys())
-                result[year_date.year] = {month_date.month: days}
+        for year in years:
+            months = self.get_existing_months(datetime.date(year, 1, 1))
+            year_data = {}
+
+            for month in months:
+                month_date = datetime.date(year, month, 1)
+                year_data[month] = list(self.read_month_data(month_date).keys())
+
+            result[year] = year_data
 
         return result
 
@@ -102,7 +106,7 @@ class DataBackend:
 
         files = listdir(self.paths[DATA_FILES_PATH_KEYWORD])
         for file in files:
-            if self.parse_year_from_data_file_name(file) == year:
+            if self.parse_year_from_data_file_name(file) == year.year:
                 months.append(int(file[:file.index("-")]))
 
         months.sort()
@@ -112,6 +116,6 @@ class DataBackend:
     def parse_year_from_data_file_name(name) -> int:
         """File name example: 12-2020.json"""
         try:
-            return int(name[name.index("-")+1:name.index(".json")])
+            return int(name[name.index("-") + 1:name.index(".json")])
         except Exception:
             raise InvalidMonthDataFileNameError()

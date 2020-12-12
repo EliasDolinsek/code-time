@@ -217,3 +217,39 @@ class DataBackendTest(unittest.TestCase):
         data_backend = DataBackend(paths)
         result = data_backend.get_existing_months(2022)
         self.assertEqual([], result)
+
+    def test_get_days_with_data(self):
+        mock_month_data = {
+            1: {
+                "PyCharm": 1000
+            },
+            2: {
+                "IntelliJ": 2000
+            }
+        }
+
+        file_names = ["12-2020.json", "01-2021.json", "09-2019.json"]
+        for f_name in file_names:
+            with open(os.path.join(self.data_directory, f_name), "w") as file:
+                file.write(json.dumps(mock_month_data))
+
+        paths = {
+            DATA_FILES_PATH_KEYWORD: self.data_directory
+        }
+
+        data_backend = DataBackend(paths)
+        result = data_backend.get_days_with_data()
+
+        expected_result = {
+            2020: {
+                12: [1, 2]
+            },
+            2021: {
+                1: [1, 2]
+            },
+            2019: {
+                9: [1, 2]
+            }
+        }
+
+        self.assertEqual(expected_result, result)
