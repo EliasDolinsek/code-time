@@ -39,3 +39,29 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         }
 
         self.assertEqual(expected_result, repository.cached_month_data)
+
+    def test_get_month_data_cached(self):
+        data_backend = DataBackend({})
+        test_date = datetime.date(2020, 1, 1)
+
+        data_backend.read_month_data = MagicMock()
+
+        repository = CodeTimeDataRepository(data_backend)
+        repository.cached_month_data["1-2020"] = self.get_default_month_data()
+
+        result = repository.get_month_data(test_date)
+
+        data_backend.read_month_data.assert_not_called()
+        self.assertEqual(self.get_default_month_data(), result)
+
+    def test_get_month_data_not_cached(self):
+        data_backend = DataBackend({})
+        test_date = datetime.date(2020, 1, 1)
+
+        data_backend.read_month_data = MagicMock(return_value=self.get_default_month_data())
+        repository = CodeTimeDataRepository(data_backend)
+
+        result = repository.get_month_data(test_date)
+
+        data_backend.read_month_data.assert_called_once_with(test_date)
+        self.assertEqual(self.get_default_month_data(), result)

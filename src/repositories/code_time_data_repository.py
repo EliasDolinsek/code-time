@@ -13,6 +13,9 @@ class CodeTimeDataRepository:
     def get_cache_key(date: datetime.date):
         return f"{date.month}-{date.year}"
 
+    def cache_month_data(self, date: datetime.date):
+        self.cached_month_data[self.get_cache_key(date)] = self.data_backend.read_month_data(date)
+
     def get_month_data(self, date: datetime.date):
         cache_key = self.get_cache_key(date)
 
@@ -20,9 +23,6 @@ class CodeTimeDataRepository:
             self.cache_month_data(date)
 
         return self.cached_month_data[cache_key]
-
-    def cache_month_data(self, date: datetime.date):
-        self.cached_month_data[self.get_cache_key(date)] = self.data_backend.read_month_data(date)
 
     def add_day_data(self, data: dict, date: datetime.date):
         """
