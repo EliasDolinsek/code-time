@@ -11,3 +11,8 @@ class ConfigFileNotFoundError(Exception):
 class EmptyMonthDataError(Exception):
     """Raised when trying to write empty month data"""
     pass
+
+
+class EmptyConfigError(Exception):
+    """Raised when trying to write empty config"""
+    pass

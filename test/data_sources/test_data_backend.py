@@ -5,7 +5,8 @@ import unittest
 from datetime import date
 
 from src.data_sources.data_backend import DataBackend, DATA_FILES_PATH_KEYWORD, CONFIG_FILE_PATH_KEYWORD
-from src.data_sources.errors import MonthDataFileNotFoundError, EmptyMonthDataError, ConfigFileNotFoundError
+from src.data_sources.errors import MonthDataFileNotFoundError, EmptyMonthDataError, ConfigFileNotFoundError, \
+    EmptyConfigError
 
 
 class DataBackendTest(unittest.TestCase):
@@ -128,3 +129,24 @@ class DataBackendTest(unittest.TestCase):
 
         data_backend = DataBackend(paths)
         self.assertRaises(ConfigFileNotFoundError, data_backend.read_config)
+
+    def test_write_config_file_empty_config(self):
+        data_backend = DataBackend({})
+        self.assertRaises(EmptyConfigError, data_backend.write_config, {})
+
+    def test_write_config_file_not_empty(self):
+        temp_config = tempfile.mkstemp()[1]
+        paths = {
+            CONFIG_FILE_PATH_KEYWORD: temp_config
+        }
+
+        data_backend = DataBackend(paths)
+        mock_config = {
+            "enabled": True
+        }
+
+        data_backend.write_config(mock_config)
+        with open(temp_config, "r") as file:
+            self.assertDictEqual(mock_config, json.loads(file.read()))
+
+        os.remove(temp_config)
