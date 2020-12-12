@@ -95,7 +95,7 @@ class DataBackendTest(unittest.TestCase):
             DATA_FILES_PATH_KEYWORD: self.data_directory
         }
 
-        test_date = date(2002, 1, 1)
+        test_date = date(2020, 1, 1)
         data_backend = DataBackend(paths)
         mock_data = {
             1: {
@@ -160,7 +160,7 @@ class DataBackendTest(unittest.TestCase):
     def test_parse_year_from_data_file_name_valid_name(self):
         name = "12-2020.json"
         data_backend = DataBackend({})
-        self.assertEquals(2020, data_backend.parse_year_from_data_file_name(name))
+        self.assertEqual(2020, data_backend.parse_year_from_data_file_name(name))
 
     def test_parse_year_from_data_file_name_valid_name_invalid_name(self):
         name = "122020.json"
@@ -201,7 +201,7 @@ class DataBackendTest(unittest.TestCase):
         }
 
         data_backend = DataBackend(paths)
-        result = data_backend.get_existing_months(2020)
+        result = data_backend.get_existing_months(date(2020, 1, 1))
         self.assertEqual([12], result)
 
     def test_get_existing_months_no_matching_months(self):
@@ -215,7 +215,7 @@ class DataBackendTest(unittest.TestCase):
         }
 
         data_backend = DataBackend(paths)
-        result = data_backend.get_existing_months(2022)
+        result = data_backend.get_existing_months(date(2022, 1, 1))
         self.assertEqual([], result)
 
     def test_get_days_with_data(self):
