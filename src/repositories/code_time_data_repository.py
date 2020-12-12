@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 from src.data_sources.data_backend import DataBackend
 
@@ -9,32 +9,57 @@ class CodeTimeDataRepository:
     def __init__(self, data_backend: DataBackend):
         self.data_backend = data_backend
 
-    def get_month_data(self, year=datetime.today().year, month=datetime.today().month):
-        self._cache_month_data(year, month)
-        return self.month_data[f"{month}{year}"]
+    @staticmethod
+    def get_cache_key(date: datetime.date):
+        return f"{date.month}-{date.year}"
 
-    def _cache_month_data(self, year: int, month: int):
-        self.month_data[f"{month}{year}"] = self.data_backend.read_month_data(year=year, month=month)
+    def get_month_data(self, date: datetime.date):
+        cache_key = self.get_cache_key(date)
 
-    def add_day_data(self, day_data, year=datetime.today().year, month=datetime.today().month,
-                     day=datetime.today().day):
-        key = f"{month}{year}"
-        name = day_data["name"]
-        time = day_data["time"]
+        if cache_key not in self.month_data:
+            self.cache_month_data(date)
 
-        if key not in self.month_data:
-            self._cache_month_data(year, month)
+        return self.month_data[cache_key]
 
-        data = self.month_data[key]
-        if day not in data:
-            data[day] = {}
-            data[day][name] = time
+    def cache_month_data(self, date: datetime.date):
+        self.month_data[self.get_cache_key(date)] = self.data_backend.read_month_data(date)
+
+    def add_day_data(self, data: dict, date: datetime.date):
+        """
+        Saves time tracking data
+
+        Example structure for data argument:
+        data: dict
+            {
+                "name": "PyCharm",
+                "time": 3000,
+                "start_date": datetime.datetime
+            }
+        """
+
+        cache_key = self.get_cache_key(date)
+
+        name = data["name"]
+        time = data["time"]
+
+        if date + datetime.timedelta(milliseconds=time) > date:
+            print("OK")
+
+        if cache_key not in self.month_data:
+            self.cache_month_data(date)
+
+        cached_data = self.month_data[cache_key]
+
+        day = date.day
+        if date.day not in cached_data:
+            cached_data[day] = {}
+
+        if name not in cached_data[day]:
+            cached_data[day][name] = time
         else:
-            if name not in data[day]:
-                data[day][name] = time
-            else:
-                data[day][name] += time
-        self.data_backend.write_month_data(year, month, data)
+            data[day][name] += time
+
+        self.data_backend.write_month_data(cached_data, date)
 
     def get_days_with_data(self):
         return self.data_backend.get_days_with_data()
