@@ -5,7 +5,7 @@ import unittest
 from datetime import date
 
 from src.data_sources.data_backend import DataBackend, DATA_FILES_PATH_KEYWORD
-from src.data_sources.errors import MonthDataFileNotFoundError
+from src.data_sources.errors import MonthDataFileNotFoundError, EmptyMonthDataError
 
 
 class DataBackendTest(unittest.TestCase):
@@ -59,7 +59,7 @@ class DataBackendTest(unittest.TestCase):
         }
 
         test_date = date(2020, 1, 1)
-        mock_content = {
+        mock_data = {
             1: {
                 "PyCharm": 20000,
                 "IntelliJ": 5000
@@ -68,8 +68,36 @@ class DataBackendTest(unittest.TestCase):
 
         file_name = "01-2020.json"
         with open(os.path.join(self.data_directory, file_name), "w") as file:
-            file.write(json.dumps(mock_content))
+            file.write(json.dumps(mock_data))
 
         data_backend = DataBackend(paths)
         result = data_backend.read_month_data(test_date)
-        self.assertDictEqual(mock_content, result)
+        self.assertDictEqual(mock_data, result)
+
+    def test_write_month_data_empty_data(self):
+        paths = {
+            DATA_FILES_PATH_KEYWORD: self.data_directory
+        }
+
+        test_date = date(2020, 1, 1)
+        data_backend = DataBackend(paths)
+        self.assertRaises(EmptyMonthDataError, data_backend.write_month_data, {}, test_date)
+
+    def test_write_month_data_non_empty_data(self):
+        paths = {
+            DATA_FILES_PATH_KEYWORD: self.data_directory
+        }
+
+        test_date = date(2002, 1, 1)
+        data_backend = DataBackend(paths)
+        mock_data = {
+            1: {
+                "PyCharm": 20000,
+                "IntelliJ": 5000
+            }
+        }
+
+        data_backend.write_month_data(mock_data, test_date)
+
+        with open(os.path.join(self.data_directory, "01-2020.json")) as file:
+            self.assertEqual(json.dumps(mock_data), file.read())

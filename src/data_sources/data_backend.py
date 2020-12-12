@@ -3,7 +3,7 @@ import json
 import os
 from os import listdir
 
-from src.data_sources.errors import MonthDataFileNotFoundError
+from src.data_sources.errors import MonthDataFileNotFoundError, EmptyMonthDataError
 
 DATA_FILES_PATH_KEYWORD = "data_directory"
 CONFIG_FILE_PATH_KEYWORD = "config"
@@ -39,7 +39,10 @@ class DataBackend:
         else:
             raise MonthDataFileNotFoundError
 
-    def write_month_data(self, data, date: datetime):
+    def write_month_data(self, data: dict, date: datetime):
+        if not bool(data):
+            raise EmptyMonthDataError()
+
         if not os.path.exists(self.paths[DATA_FILES_PATH_KEYWORD]):
             os.mkdir(self.paths[DATA_FILES_PATH_KEYWORD])
 
