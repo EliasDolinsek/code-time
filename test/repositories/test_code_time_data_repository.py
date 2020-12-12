@@ -201,3 +201,25 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         }
 
         self.assertEqual(expected_result, result)
+
+    def test_get_config(self):
+        mock_config = {"enabled": True}
+
+        data_backend = DataBackend({})
+        data_backend.read_config = MagicMock(return_value=mock_config)
+
+        data_repository = CodeTimeDataRepository(data_backend)
+        result = data_repository.get_config()
+
+        self.assertDictEqual(mock_config, result)
+
+    def test_write_config(self):
+        mock_config = {"enabled": True}
+
+        data_backend = DataBackend({})
+        data_backend.write_config = MagicMock()
+
+        data_repository = CodeTimeDataRepository(data_backend)
+        data_repository.write_config(mock_config)
+
+        data_backend.write_config.assert_called_once_with(mock_config)
