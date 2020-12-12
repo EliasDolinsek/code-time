@@ -4,14 +4,10 @@ import os
 from os import listdir
 
 from src.data_sources.errors import MonthDataFileNotFoundError, EmptyMonthDataError, ConfigFileNotFoundError, \
-    EmptyConfigError
+    EmptyConfigError, InvalidMonthDataFileNameError
 
 DATA_FILES_PATH_KEYWORD = "data_directory"
 CONFIG_FILE_PATH_KEYWORD = "config"
-
-
-def _parse_year_from_data_file_name(name: str) -> datetime:
-    return datetime(year=int(name[2:6]), month=1, day=1)
 
 
 class DataBackend:
@@ -67,17 +63,17 @@ class DataBackend:
 
     def get_days_with_data(self):
         result = {}
-        years = self._get_available_years()
+        years = self.get_available_years()
 
         for year_date in years:
-            months = self._get_available_months(year_date)
+            months = self.get_available_months(year_date)
             for month_date in months:
                 days = list(self.read_month_data(month_date).keys())
                 result[year_date.year] = {month_date.month: days}
 
         return result
 
-    def _get_available_years(self) -> list:
+    def get_available_years(self) -> list:
         if not os.path.exists(self.paths[DATA_FILES_PATH_KEYWORD]):
             return []
 
@@ -85,20 +81,28 @@ class DataBackend:
         years = []
 
         for file in files:
-            year = _parse_year_from_data_file_name(file)
+            year = self.parse_year_from_data_file_name(file)
             if year not in years:
                 years.append(year)
 
         years.sort()
         return years
 
-    def _get_available_months(self, year: datetime) -> list:
+    def get_available_months(self, year: datetime) -> list:
         files = listdir(self.paths[DATA_FILES_PATH_KEYWORD])
         months = []
 
         for file in files:
-            if _parse_year_from_data_file_name(file) == year:
+            if self.parse_year_from_data_file_name(file) == year:
                 months.append(datetime(year=year.year, month=int(file[:2]), day=1))
 
         months.sort()
         return months
+
+    @staticmethod
+    def parse_year_from_data_file_name(name) -> int:
+        """File name example: 12-2020.json"""
+        try:
+            return int(name[name.index("-")+1:name.index(".json")])
+        except Exception:
+            raise InvalidMonthDataFileNameError()

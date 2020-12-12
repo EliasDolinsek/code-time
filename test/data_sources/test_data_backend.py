@@ -6,7 +6,7 @@ from datetime import date
 
 from src.data_sources.data_backend import DataBackend, DATA_FILES_PATH_KEYWORD, CONFIG_FILE_PATH_KEYWORD
 from src.data_sources.errors import MonthDataFileNotFoundError, EmptyMonthDataError, ConfigFileNotFoundError, \
-    EmptyConfigError
+    EmptyConfigError, InvalidMonthDataFileNameError
 
 
 class DataBackendTest(unittest.TestCase):
@@ -150,3 +150,13 @@ class DataBackendTest(unittest.TestCase):
             self.assertDictEqual(mock_config, json.loads(file.read()))
 
         os.remove(temp_config)
+
+    def test_parse_year_from_data_file_name_valid_name(self):
+        name = "12-2020.json"
+        data_backend = DataBackend({})
+        self.assertEquals(2020, data_backend.parse_year_from_data_file_name(name))
+
+    def test_parse_year_from_data_file_name_valid_name_invalid_name(self):
+        name = "122020.json"
+        data_backend = DataBackend({})
+        self.assertRaises(InvalidMonthDataFileNameError, data_backend.parse_year_from_data_file_name, name)

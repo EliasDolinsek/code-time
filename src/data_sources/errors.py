@@ -16,3 +16,8 @@ class EmptyMonthDataError(Exception):
 class EmptyConfigError(Exception):
     """Raised when trying to write empty config"""
     pass
+
+
+class InvalidMonthDataFileNameError(Exception):
+    """Raised when trying to parse year from month data file name with an invalid file name"""
+    pass
