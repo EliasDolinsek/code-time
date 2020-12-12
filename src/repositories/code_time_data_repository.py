@@ -33,7 +33,7 @@ class CodeTimeDataRepository:
             {
                 "name": "PyCharm",
                 "time": 3000,
-                "start_date": datetime.datetime
+                "start_time": datetime.time
             }
         """
 
@@ -41,9 +41,22 @@ class CodeTimeDataRepository:
 
         name = data["name"]
         time = data["time"]
+        start_time = data["start_time"]
 
-        if date + datetime.timedelta(milliseconds=time) > date:
-            print("OK")
+        start_datetime = datetime.datetime.combine(date, start_time)
+        if (start_datetime + datetime.timedelta(milliseconds=time)).date() > date:
+            next_day_date = datetime.datetime.combine(date, start_time) + datetime.timedelta(days=1)
+            next_day_date = next_day_date.replace(hour=0, minute=0, second=0)
+            time_diff = next_day_date - start_datetime
+
+            day_data = {
+                "name": name,
+                "time": time - time_diff.seconds * 1000,
+                "start_time": datetime.time(0, 0, 0)
+            }
+
+            self.add_day_data(day_data, next_day_date.date())
+            time = time_diff.seconds * 1000
 
         if cache_key not in self.cached_month_data:
             self.cache_month_data(date)
@@ -57,8 +70,9 @@ class CodeTimeDataRepository:
         if name not in cached_data[day]:
             cached_data[day][name] = time
         else:
-            data[day][name] += time
+            cached_data[day][name] += time
 
+        self.cached_month_data[cache_key] = cached_data
         self.data_backend.write_month_data(cached_data, date)
 
     def get_days_with_data(self):
