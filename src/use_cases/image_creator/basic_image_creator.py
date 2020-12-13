@@ -23,7 +23,7 @@ class BasicImageCreator(BaseImageCreator):
             return image
 
     def paste_user_image(self, image):
-        user_image = Image.open(self.get_config()["user_image"], "r")
+        user_image = Image.open(self.get_config()["user_image"], "r").convert("RGBA")
         user_image = user_image.resize((BasicImageCreator.USER_IMAGE_SIZE, BasicImageCreator.USER_IMAGE_SIZE),
                                        Image.ANTIALIAS)
 
