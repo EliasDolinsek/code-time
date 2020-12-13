@@ -95,9 +95,12 @@ class CodeTimeDataRepository:
         data = self.get_days_with_data()
         return list(data.keys())
 
+    def cache_config(self):
+        self.cached_config = self.data_backend.read_config()
+
     def get_config(self):
         if self.cached_config is None:
-            self.cached_config = self.data_backend.read_config()
+            self.cache_config()
 
         return self.cached_config
 
