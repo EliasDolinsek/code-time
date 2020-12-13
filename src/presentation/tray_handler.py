@@ -4,6 +4,7 @@ from pathlib import Path
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
+from src.data_sources.errors import CodeTimeError
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
 from src.use_cases.activity_tracker import ActivityTracker
 from src.use_cases.image_creator.basic_image_creator import BasicImageCreator
@@ -82,8 +83,12 @@ class TrayHandler:
         today_menu = statistics_menu.addMenu("Today")
 
         today = datetime.datetime.today()
-        self.add_statistic_actions_to_menu(today_menu, today)
-        self.add_years_statistics_to_menu(statistics_menu)
+
+        try:
+            self.add_statistic_actions_to_menu(today_menu, today)
+            self.add_years_statistics_to_menu(statistics_menu)
+        except CodeTimeError as ex:
+            self.show_error_message(description=str(ex))
 
     def show_statics_of_day(self, date: datetime.date):
         image = self.image_creator.create_image(self.data_repository.get_statistics(date))
@@ -102,3 +107,15 @@ class TrayHandler:
             self.action_pause_continue.setText(TEXT_CONTINUE)
         else:
             self.action_pause_continue.setText(TEXT_PAUSE)
+
+    @staticmethod
+    def show_error_message(title="An error occurred", description=None):
+        message = QMessageBox()
+        message.setIcon(QMessageBox.Critical)
+        message.setText(title)
+        message.setInformativeText(description)
+        message.setWindowTitle("code-time")
+        message.setStandardButtons(QMessageBox.Ok)
+
+        message.buttonClicked.connect(lambda: message.hide())
+        message.exec_()
