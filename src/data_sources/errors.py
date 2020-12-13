@@ -1,23 +1,38 @@
-class MonthDataFileNotFoundError(Exception):
+class CodeTimeError(Exception):
+    def __init__(self, message):
+        super(CodeTimeError, self).__init__(message)
+
+
+class MonthDataFileNotFoundError(CodeTimeError):
     """Raised when file containing month data is not being found"""
-    pass
+
+    def __init__(self, message="Could not load tracking data of month"):
+        super(MonthDataFileNotFoundError, self).__init__(message)
 
 
-class ConfigFileNotFoundError(Exception):
+class ConfigFileNotFoundError(CodeTimeError):
     """Raised when config file is not being found"""
-    pass
+
+    def __init__(self, message="Could not find config file"):
+        super(ConfigFileNotFoundError, self).__init__(message)
 
 
-class EmptyMonthDataError(Exception):
+class EmptyMonthDataError(CodeTimeError):
     """Raised when trying to write empty month data"""
-    pass
+
+    def __init__(self, message="Tried to write empty month data"):
+        super(EmptyMonthDataError, self).__init__(message)
 
 
-class EmptyConfigError(Exception):
+class EmptyConfigError(CodeTimeError):
     """Raised when trying to write empty config"""
-    pass
+
+    def __init__(self, message="Tried to write empty config"):
+        super(EmptyConfigError, self).__init__(message)
 
 
-class InvalidMonthDataFileNameError(Exception):
+class InvalidMonthDataFileNameError(CodeTimeError):
     """Raised when trying to parse year from month data file name with an invalid file name"""
-    pass
+
+    def __init__(self, message="Invalid name for month data file"):
+        super(InvalidMonthDataFileNameError, self).__init__(message)
