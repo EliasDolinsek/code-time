@@ -5,6 +5,7 @@ from src.data_sources.data_backend import DataBackend
 
 class CodeTimeDataRepository:
     cached_month_data = {}
+    cached_config = None
 
     def __init__(self, data_backend: DataBackend):
         self.data_backend = data_backend
@@ -94,10 +95,17 @@ class CodeTimeDataRepository:
         data = self.get_days_with_data()
         return list(data.keys())
 
+    def cache_config(self):
+        self.cached_config = self.data_backend.read_config()
+
     def get_config(self):
-        return self.data_backend.read_config()
+        if self.cached_config is None:
+            self.cache_config()
+
+        return self.cached_config
 
     def write_config(self, config):
+        self.cached_config = config
         self.data_backend.write_config(config)
 
     def get_statistics(self, date: datetime.date):
