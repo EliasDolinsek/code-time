@@ -24,3 +24,6 @@ class BaseImageCreator(ABC):
 
     def get_config(self):
         return self.data_repository.get_config()
+
+    def get_font(self, name):
+        return self.get_config()["fonts"][name]
