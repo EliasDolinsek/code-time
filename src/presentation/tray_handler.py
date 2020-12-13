@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import *
 
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
 from src.use_cases.activity_tracker import ActivityTracker
-from src.use_cases.image_creator import ImageCreator
+from src.use_cases.image_creator.basic_image_creator import BasicImageCreator
 
 TEXT_PAUSE = "Pause tracking"
 TEXT_CONTINUE = "Continue tracking"
@@ -14,7 +14,7 @@ TEXT_CONTINUE = "Continue tracking"
 
 class TrayHandler:
 
-    def __init__(self, image_creator: ImageCreator, activity_tracker: ActivityTracker,
+    def __init__(self, image_creator: BasicImageCreator, activity_tracker: ActivityTracker,
                  data_repository: CodeTimeDataRepository):
         super().__init__()
         self.image_creator = image_creator
