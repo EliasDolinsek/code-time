@@ -1,6 +1,8 @@
 import datetime
 
 from pathlib import Path
+
+from PIL.ImageQt import ImageQt
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
@@ -59,9 +61,9 @@ class TrayHandler:
     def add_days_statistics_to_menu(self, menu, date: datetime.date):
         days = self.data_repository.get_days_with_data()[date.year][date.month]
         for day in days:
-            day_menu = menu.addMenu(str(day))
+            day_action = menu.addAction(str(day))
             day_date = date.replace(day=day)
-            self.add_statistic_actions_to_menu(day_menu, day_date)
+            self.add_statistic_actions_to_menu(day_action, day_date)
 
     def add_months_statistics_to_menu(self, menu, date: datetime.date):
         months = self.data_repository.get_months_with_data()[date.year]
@@ -80,23 +82,22 @@ class TrayHandler:
 
     def add_statistics_to_menu(self, menu):
         statistics_menu = menu.addMenu("Statistics")
-        today_menu = statistics_menu.addMenu("Today")
+        today_action = statistics_menu.addAction("Today")
 
         today = datetime.datetime.today()
 
         try:
-            self.add_statistic_actions_to_menu(today_menu, today)
+            self.add_statistic_actions_to_menu(today_action, today)
             self.add_years_statistics_to_menu(statistics_menu)
         except CodeTimeError as ex:
             self.show_error_message(description=str(ex))
 
     def show_statics_of_day(self, date: datetime.date):
         image = self.image_creator.create_image(self.data_repository.get_statistics(date))
-        image.show()
+        self.show_image_preview(image, date)
 
-    def add_statistic_actions_to_menu(self, menu, date):
-        menu.addAction("Show").triggered.connect(lambda: self.show_statics_of_day(date))
-        menu.addAction("Export as PNG").triggered.connect(lambda: self.save_statistic_as_png(date))
+    def add_statistic_actions_to_menu(self, action, date):
+        action.triggered.connect(lambda: self.show_image_preview(date))
 
     def _on_quit(self):
         self.activity_tracker.on_quit()
@@ -119,3 +120,25 @@ class TrayHandler:
 
         message.buttonClicked.connect(lambda: message.hide())
         message.exec_()
+
+    def show_image_preview(self, date: datetime):
+        dialog = QDialog()
+        dialog.setWindowTitle("Statistics preview")
+
+        layout = QVBoxLayout()
+
+        image = self.image_creator.create_image(self.data_repository.get_statistics(date))
+        image = image.resize((image.width // 2, image.height // 2))
+        image_view = QPixmap.fromImage(ImageQt(image))
+
+        image_label = QLabel()
+        image_label.setPixmap(image_view)
+
+        btn_export = QPushButton("EXPORT AS PNG")
+        btn_export.clicked.connect(lambda: self.save_statistic_as_png(date))
+
+        layout.addWidget(image_label)
+        layout.addWidget(btn_export)
+
+        dialog.setLayout(layout)
+        dialog.exec_()
