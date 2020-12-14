@@ -1,6 +1,9 @@
 import datetime
 
 from pathlib import Path
+
+from PIL.ImageDraw import ImageDraw
+from PIL.ImageQt import ImageQt
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
@@ -92,7 +95,7 @@ class TrayHandler:
 
     def show_statics_of_day(self, date: datetime.date):
         image = self.image_creator.create_image(self.data_repository.get_statistics(date))
-        image.show()
+        self.show_image_preview(image)
 
     def add_statistic_actions_to_menu(self, menu, date):
         menu.addAction("Show").triggered.connect(lambda: self.show_statics_of_day(date))
@@ -119,3 +122,25 @@ class TrayHandler:
 
         message.buttonClicked.connect(lambda: message.hide())
         message.exec_()
+
+    @staticmethod
+    def show_image_preview(image: ImageDraw):
+        dialog = QDialog()
+        dialog.setWindowTitle("Statistics preview")
+
+        layout = QVBoxLayout()
+
+        resized_image = image.resize((image.width // 2, image.height // 2))
+        image_view = QPixmap.fromImage(ImageQt(resized_image))
+
+        image_label = QLabel()
+        image_label.setPixmap(image_view)
+
+        btn_export = QPushButton("EXPORT AS PNG")
+        btn_export.clicked.connect(lambda: print("PRESS"))
+
+        layout.addWidget(image_label)
+        layout.addWidget(btn_export)
+
+        dialog.setLayout(layout)
+        dialog.exec_()
