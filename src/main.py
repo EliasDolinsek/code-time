@@ -20,5 +20,5 @@ if __name__ == "__main__":
     activity_tracker.start()
 
     tray_handler = TrayHandler(image_creator=image_creator, activity_tracker=activity_tracker,
-                               data_repository=data_repository)
+                               data_repository=data_repository, activity_provider=focus_activity_provider)
     tray_handler.start()

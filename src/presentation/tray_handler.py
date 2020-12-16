@@ -7,7 +7,9 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 from src.data_sources.errors import CodeTimeError
+from src.presentation.add_activity_dialog import AddActivityDialog
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
+from src.repositories.focus_activity_provider import FocusActivityProvider
 from src.use_cases.activity_tracker import ActivityTracker
 from src.use_cases.image_creator.basic_image_creator import BasicImageCreator
 
@@ -18,8 +20,9 @@ TEXT_CONTINUE = "Continue tracking"
 class TrayHandler:
 
     def __init__(self, image_creator: BasicImageCreator, activity_tracker: ActivityTracker,
-                 data_repository: CodeTimeDataRepository):
+                 data_repository: CodeTimeDataRepository, activity_provider: FocusActivityProvider):
         super().__init__()
+        self.activity_provider = activity_provider
         self.image_creator = image_creator
         self.activity_tracker = activity_tracker
         self.data_repository = data_repository
@@ -44,10 +47,19 @@ class TrayHandler:
 
         menu.addAction(self.action_pause_continue)
         self.add_statistics_to_menu(menu)
+
+        self.setup_add_activity(menu)
         menu.addAction(self.action_quit)
 
         tray.setContextMenu(menu)
         self.app.exec_()
+
+    def setup_add_activity(self, menu):
+        menu.addAction("Add activity").triggered.connect(self.on_add_activity)
+
+    def on_add_activity(self):
+        dialog = AddActivityDialog(self.activity_provider, self.data_repository)
+        dialog.exec_()
 
     def save_statistic_as_png(self, date):
         recommended_path = str(Path.home().joinpath(f"code-time_{date.day}{date.month}{date.year}.png"))
