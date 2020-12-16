@@ -26,10 +26,10 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         self.assertEqual("1-2020", result)
 
     def test_cache_month_data(self):
-        data_backend = DataBackend({})
+        data_backend = MagicMock()
         test_date = datetime.date(2020, 1, 1)
 
-        data_backend.read_month_data = MagicMock(return_value=self.get_default_month_data())
+        data_backend.read_month_data.return_value = self.get_default_month_data()
         repository = CodeTimeDataRepository(data_backend)
 
         repository.cache_month_data(test_date)
@@ -41,10 +41,8 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         self.assertEqual(expected_result, repository.cached_month_data)
 
     def test_get_month_data_cached(self):
-        data_backend = DataBackend({})
+        data_backend = MagicMock()
         test_date = datetime.date(2020, 1, 1)
-
-        data_backend.read_month_data = MagicMock()
 
         repository = CodeTimeDataRepository(data_backend)
         repository.cached_month_data["1-2020"] = self.get_default_month_data()
@@ -55,10 +53,10 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         self.assertEqual(self.get_default_month_data(), result)
 
     def test_get_month_data_not_cached(self):
-        data_backend = DataBackend({})
+        data_backend = MagicMock()
         test_date = datetime.date(2020, 1, 1)
 
-        data_backend.read_month_data = MagicMock(return_value=self.get_default_month_data())
+        data_backend.read_month_data.return_value = self.get_default_month_data()
         repository = CodeTimeDataRepository(data_backend)
 
         result = repository.get_month_data(test_date)
@@ -75,12 +73,11 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         }
 
     def test_add_day_data_new_day(self):
-        data_backend = DataBackend({})
-        data_backend.read_month_data = MagicMock(return_value=self.get_default_month_data())
-        data_backend.write_month_data = MagicMock()
+        data_backend = MagicMock()
+        data_backend.read_month_data.return_value = self.get_default_month_data()
 
         repository = CodeTimeDataRepository(data_backend)
-        test_date = datetime.datetime(2020, 2, 2)
+        test_date = datetime.date(2020, 2, 2)
 
         repository.add_day_data(self.get_default_day_data_to_add(), test_date)
 
@@ -92,9 +89,8 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         data_backend.write_month_data.assert_called_once_with(expected_month_data, test_date)
 
     def test_add_day_data_new_activity(self):
-        data_backend = DataBackend({})
-        data_backend.read_month_data = MagicMock(return_value=self.get_default_month_data())
-        data_backend.write_month_data = MagicMock()
+        data_backend = MagicMock()
+        data_backend.read_month_data.return_value = self.get_default_month_data()
 
         repository = CodeTimeDataRepository(data_backend)
         test_date = datetime.date(2020, 1, 1)
@@ -113,8 +109,8 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         data_backend.write_month_data.assert_called_once_with(expected_month_data, test_date)
 
     def test_add_day_data_activity(self):
-        data_backend = DataBackend({})
-        data_backend.read_month_data = MagicMock(return_value=self.get_default_month_data())
+        data_backend = MagicMock()
+        data_backend.read_month_data.return_value = self.get_default_month_data()
         data_backend.write_month_data = MagicMock()
 
         repository = CodeTimeDataRepository(data_backend)
@@ -129,9 +125,8 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         data_backend.write_month_data.assert_called_once_with(expected_month_data, test_date)
 
     def test_add_day_data_activity_exceeding_current_day(self):
-        data_backend = DataBackend({})
-        data_backend.read_month_data = MagicMock(return_value=self.get_default_month_data())
-        data_backend.write_month_data = MagicMock()
+        data_backend = MagicMock()
+        data_backend.read_month_data.return_value = self.get_default_month_data()
 
         repository = CodeTimeDataRepository(data_backend)
         test_date = datetime.date(2020, 1, 1)
@@ -153,7 +148,7 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         data_backend.write_month_data.assert_has_calls([call(expected_month_data, test_date)], any_order=True)
 
     def test_get_days_with_data(self):
-        data_backend = DataBackend({})
+        data_backend = MagicMock()
 
         mock_return = {
             2020: {
@@ -161,14 +156,14 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
             }
         }
 
-        data_backend.get_days_with_data = MagicMock(return_value=mock_return)
+        data_backend.get_days_with_data.return_value = mock_return
         data_repository = CodeTimeDataRepository(data_backend)
 
         result = data_repository.get_days_with_data()
         self.assertEqual(mock_return, result)
 
     def test_get_years_with_data(self):
-        data_backend = DataBackend({})
+        data_backend = MagicMock()
 
         mock_return = {
             2020: {
@@ -176,14 +171,14 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
             }
         }
 
-        data_backend.get_days_with_data = MagicMock(return_value=mock_return)
+        data_backend.get_days_with_data.return_value = mock_return
         data_repository = CodeTimeDataRepository(data_backend)
 
         result = data_repository.get_years_with_data()
         self.assertEqual([2020], result)
 
     def test_get_months_with_data(self):
-        data_backend = DataBackend({})
+        data_backend = MagicMock()
 
         mock_return = {
             2020: {
@@ -191,7 +186,7 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
             }
         }
 
-        data_backend.get_days_with_data = MagicMock(return_value=mock_return)
+        data_backend.get_days_with_data.return_value = mock_return
         data_repository = CodeTimeDataRepository(data_backend)
 
         result = data_repository.get_months_with_data()
@@ -205,8 +200,8 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
     def test_get_config(self):
         mock_config = {"enabled": True}
 
-        data_backend = DataBackend({})
-        data_backend.read_config = MagicMock(return_value=mock_config)
+        data_backend = MagicMock()
+        data_backend.read_config.return_value = mock_config
 
         data_repository = CodeTimeDataRepository(data_backend)
         result = data_repository.get_config()
@@ -216,8 +211,7 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
     def test_write_config(self):
         mock_config = {"enabled": True}
 
-        data_backend = DataBackend({})
-        data_backend.write_config = MagicMock()
+        data_backend = MagicMock()
 
         data_repository = CodeTimeDataRepository(data_backend)
         data_repository.write_config(mock_config)
@@ -232,8 +226,8 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
             }
         }
 
-        data_backend = DataBackend({})
-        data_backend.read_month_data = MagicMock(return_value=mock_month_data)
+        data_backend = MagicMock()
+        data_backend.read_month_data.return_value = mock_month_data
 
         data_repository = CodeTimeDataRepository(data_backend)
         result = data_repository.get_statistics(datetime.date(2020, 1, 1))
@@ -255,6 +249,7 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
             ]
         }
 
+        self.maxDiff = None
         self.assertDictEqual(expected_result, result)
 
     def test_summarize_activities_single_activity(self):
