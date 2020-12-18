@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import *
 
 from src.data_sources.errors import CodeTimeError
 from src.presentation.add_activity_dialog import AddActivityDialog
-from src.presentation.settings_dialog import SettingsDialog
+from src.presentation.settings.settings_dialog import SettingsDialog
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
 from src.repositories.focus_activity_provider import FocusActivityProvider
 from src.use_cases.activity_tracker import ActivityTracker
@@ -60,7 +60,7 @@ class TrayHandler:
         menu.addAction("Settings").triggered.connect(self.on_settings)
 
     def on_settings(self):
-        dialog = SettingsDialog()
+        dialog = SettingsDialog(self.data_repository)
         dialog.exec_()
 
     def setup_add_activity(self, menu):
