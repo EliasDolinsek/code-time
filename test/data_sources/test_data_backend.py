@@ -157,6 +157,10 @@ class DataBackendTest(unittest.TestCase):
 
         os.remove(temp_config)
 
+    def test_write_config_no_dict(self):
+        data_backend = DataBackend({})
+        self.assertRaises(EmptyConfigError, data_backend.write_config, "Test")
+
     def test_parse_year_from_data_file_name_valid_name(self):
         name = "12-2020.json"
         data_backend = DataBackend({})
