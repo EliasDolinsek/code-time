@@ -49,7 +49,6 @@ class TrayHandler:
         menu.addAction(self.action_pause_continue)
         self.add_statistics_to_menu(menu)
 
-        self.setup_add_activity(menu)
         self.setup_settings(menu)
         menu.addAction(self.action_quit)
 
@@ -61,13 +60,6 @@ class TrayHandler:
 
     def on_settings(self):
         dialog = SettingsDialog(self.activity_provider, self.data_repository)
-        dialog.exec_()
-
-    def setup_add_activity(self, menu):
-        menu.addAction("Add activity").triggered.connect(self.on_add_activity)
-
-    def on_add_activity(self):
-        dialog = AddActivityDialog(self.activity_provider, self.data_repository)
         dialog.exec_()
 
     def save_statistic_as_png(self, date):
