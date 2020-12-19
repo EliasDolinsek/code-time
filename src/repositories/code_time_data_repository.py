@@ -129,7 +129,7 @@ class CodeTimeDataRepository:
         elif name == "progress_background_color":
             return "#E0E0E0"
         elif name == "progress_foreground_color":
-            return "3f51b5"
+            return "#3f51b5"
         elif name == "activity_title_color":
             return "#000"
         elif name == "activity_time_color":
@@ -141,7 +141,7 @@ class CodeTimeDataRepository:
         elif name == "user_image":
             return ""  # TODO Issue 19 - Asset and res management
         elif name == "activities":
-            return []  # TODO Issue 19 - Asset and res management
+            return []
         elif name == "fonts":
             return []  # TODO Issue 19 - Asset and res management
         else:

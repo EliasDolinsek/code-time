@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import MagicMock, call
 
 from src.data_sources.data_backend import DataBackend
+from src.data_sources.errors import DefaultSettingNotFoundError
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
 
 
@@ -257,6 +258,41 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
 
         data_repository.update_setting.assert_called_once_with("title_color", "#000")
         data_repository.get_default_setting.assert_called_once_with("title_color")
+
+    def test_get_default_setting_title_color(self):
+        result = CodeTimeDataRepository.get_default_setting("title_color")
+        self.assertEqual(result, "#000")
+
+    def test_get_default_setting_total_time_color(self):
+        result = CodeTimeDataRepository.get_default_setting("total_time_color")
+        self.assertEqual(result, "#000")
+
+    def test_get_default_setting_progress_background_color(self):
+        result = CodeTimeDataRepository.get_default_setting("progress_background_color")
+        self.assertEqual(result, "#E0E0E0")
+
+    def test_get_default_setting_progress_foreground_color(self):
+        result = CodeTimeDataRepository.get_default_setting("progress_foreground_color")
+        self.assertEqual(result, "#3f51b5")
+
+    def test_get_default_setting_activity_title_color(self):
+        result = CodeTimeDataRepository.get_default_setting("activity_title_color")
+        self.assertEqual(result, "#000")
+
+    def test_get_default_setting_activity_time_color(self):
+        result = CodeTimeDataRepository.get_default_setting("activity_time_color")
+        self.assertEqual(result, "#000")
+
+    def test_get_default_setting_watermark_color(self):
+        result = CodeTimeDataRepository.get_default_setting("watermark_color")
+        self.assertEqual(result, "#000")
+
+    def test_get_default_setting_activities(self):
+        result = CodeTimeDataRepository.get_default_setting("activities")
+        self.assertListEqual(result, [])
+
+    def test_get_default_setting_invalid_key(self):
+        self.assertRaises(DefaultSettingNotFoundError, CodeTimeDataRepository.get_default_setting, "some_invalid_key")
 
     def test_get_statistics(self):
         mock_month_data = {
