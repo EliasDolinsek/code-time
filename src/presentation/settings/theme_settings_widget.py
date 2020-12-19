@@ -77,4 +77,4 @@ class ThemeSettingsWidget(QWidget):
         button.setStyleSheet(f"background-color: {color};")
 
     def on_color_changed(self, settings_key, color):
-        self.data_repository.update_config(settings_key, color)
+        self.data_repository.update_setting(settings_key, color)

@@ -111,7 +111,7 @@ class CodeTimeDataRepository:
     def get_setting(self, name):
         return self.get_config()[name]
 
-    def update_config(self, name, value):
+    def update_setting(self, name, value):
         config = self.get_config()
         config[name] = value
         self.write_config(config)

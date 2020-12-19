@@ -232,7 +232,7 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         data_backend.write_config = MagicMock()
 
         data_repository = CodeTimeDataRepository(data_backend)
-        data_repository.update_config("enabled", False)
+        data_repository.update_setting("enabled", False)
 
         data_backend.write_config.assert_called_once_with({"enabled": False})
 

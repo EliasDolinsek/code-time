@@ -49,7 +49,7 @@ class ActivitiesWidget(QWidget):
             activities = self.data_repository.get_setting("activities")
             activities.remove(self.list_widget.currentItem().text())
 
-            self.data_repository.update_config("activities", activities)
+            self.data_repository.update_setting("activities", activities)
             self.load_activities_into_list()
 
     def load_activities_into_list(self):

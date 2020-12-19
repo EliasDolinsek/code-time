@@ -44,7 +44,7 @@ class AddActivityDialog(QDialog):
         if self.list_widget.currentItem() is not None:
             activities = self.data_repository.get_setting("activities")
             activities.append(self.list_widget.currentItem().text())
-            self.data_repository.update_config("activities", activities)
+            self.data_repository.update_setting("activities", activities)
 
             self.list_manager.stop()
             self.close()

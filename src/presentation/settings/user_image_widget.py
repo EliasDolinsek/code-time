@@ -51,12 +51,12 @@ class UserImageWidget(QWidget):
         result = QFileDialog.getOpenFileName(self, "Select user image", self.get_user_image_path(), "Image (*.png)")
         selected_file = result[0]
         if selected_file != "":
-            self.data_repository.update_config("user_image", selected_file)
+            self.data_repository.update_setting("user_image", selected_file)
             self.load_user_image()
 
     def on_remove(self):
         path = os.path.join(os.path.dirname(__file__), "../../../dev_assets/user.png")
-        self.data_repository.update_config("user_image", path)
+        self.data_repository.update_setting("user_image", path)
         self.load_user_image()
 
     def load_user_image(self):
