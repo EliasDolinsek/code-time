@@ -13,6 +13,8 @@ class SettingsDialog(QDialog):
         super().__init__()
         self.focus_activity_provider = focus_activity_provider
         self.data_repository = data_repository
+
+        self.setWindowTitle("code-time Settings")
         self.layout = QVBoxLayout(self)
 
         # Tab widget
