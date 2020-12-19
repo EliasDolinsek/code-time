@@ -108,6 +108,11 @@ class CodeTimeDataRepository:
         self.cached_config = config
         self.data_backend.write_config(config)
 
+    def update_config(self, name, value):
+        config = self.get_config()
+        config[name] = value
+        self.write_config(config)
+
     def get_statistics(self, date: datetime.date):
         data = self.get_month_data(date)[date.day]
         total_time = 0
