@@ -108,6 +108,9 @@ class CodeTimeDataRepository:
         self.cached_config = config
         self.data_backend.write_config(config)
 
+    def get_setting(self, name):
+        return self.get_config()[name]
+
     def update_config(self, name, value):
         config = self.get_config()
         config[name] = value

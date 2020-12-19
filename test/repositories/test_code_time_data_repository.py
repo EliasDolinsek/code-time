@@ -236,6 +236,18 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
 
         data_backend.write_config.assert_called_once_with({"enabled": False})
 
+    def test_get_setting(self):
+        mock_config = {"enabled": True}
+
+        data_backend = DataBackend({})
+        data_backend.read_config = MagicMock(return_value=mock_config)
+
+        data_repository = CodeTimeDataRepository(data_backend)
+        result = data_repository.get_setting("enabled")
+
+        self.assertTrue(result)
+        data_backend.read_config.assert_called_once()
+
     def test_get_statistics(self):
         mock_month_data = {
             1: {
