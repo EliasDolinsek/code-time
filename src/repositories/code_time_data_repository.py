@@ -1,6 +1,7 @@
 import datetime
 
 from src.data_sources.data_backend import DataBackend
+from src.data_sources.errors import DefaultSettingNotFoundError
 
 
 class CodeTimeDataRepository:
@@ -107,6 +108,44 @@ class CodeTimeDataRepository:
     def write_config(self, config):
         self.cached_config = config
         self.data_backend.write_config(config)
+
+    def get_setting(self, name):
+        return self.get_config()[name]
+
+    def update_setting(self, name, value):
+        config = self.get_config()
+        config[name] = value
+        self.write_config(config)
+
+    def reset_setting(self, name):
+        self.update_setting(name, self.get_default_setting(name))
+
+    @staticmethod
+    def get_default_setting(name):
+        if name == "title_color":
+            return "#000"
+        elif name == "total_time_color":
+            return "#000"
+        elif name == "progress_background_color":
+            return "#E0E0E0"
+        elif name == "progress_foreground_color":
+            return "#3f51b5"
+        elif name == "activity_title_color":
+            return "#000"
+        elif name == "activity_time_color":
+            return "#000"
+        elif name == "watermark_color":
+            return "#000"
+        elif name == "image":
+            return ""  # TODO Issue 19 - Asset and res management
+        elif name == "user_image":
+            return ""  # TODO Issue 19 - Asset and res management
+        elif name == "activities":
+            return []
+        elif name == "fonts":
+            return []  # TODO Issue 19 - Asset and res management
+        else:
+            raise DefaultSettingNotFoundError(message=f"Invalid settings key {name}")
 
     def get_statistics(self, date: datetime.date):
         data = self.get_month_data(date)[date.day]

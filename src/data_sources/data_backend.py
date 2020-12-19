@@ -65,7 +65,7 @@ class DataBackend:
             raise ConfigFileNotFoundError
 
     def write_config(self, config):
-        if not bool(config):
+        if config is not dict or not bool(config):
             raise EmptyConfigError()
 
         with open(self.paths[CONFIG_FILE_PATH_KEYWORD], "w") as file:
