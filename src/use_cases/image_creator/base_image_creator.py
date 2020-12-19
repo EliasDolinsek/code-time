@@ -22,8 +22,5 @@ class BaseImageCreator(ABC):
     def create_image(self, statistics: dict) -> ImageDraw:
         pass
 
-    def get_config(self):
-        return self.data_repository.get_config()
-
     def get_font(self, name):
-        return self.get_config()["fonts"][name]
+        return self.data_repository.get_setting("fonts")[name]

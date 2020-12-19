@@ -38,7 +38,7 @@ class ThemeSettingsWidget(QWidget):
         self.setLayout(self.layout)
 
     def get_color(self, name):
-        return self.data_repository.get_config()[name]
+        return self.data_repository.get_setting(name)
 
     def get_color_selection_layout(self, name, settings_key):
         color = self.get_color(settings_key)
@@ -77,6 +77,4 @@ class ThemeSettingsWidget(QWidget):
         button.setStyleSheet(f"background-color: {color};")
 
     def on_color_changed(self, settings_key, color):
-        config = self.data_repository.get_config()
-        config[settings_key] = color
-        self.data_repository.write_config(config)
+        self.data_repository.update_config(settings_key, color)

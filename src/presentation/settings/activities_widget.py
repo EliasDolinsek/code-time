@@ -46,19 +46,13 @@ class ActivitiesWidget(QWidget):
 
     def on_remove(self):
         if self.list_widget.currentItem() is not None:
-            activities = self.get_activities()
+            activities = self.data_repository.get_setting("activities")
             activities.remove(self.list_widget.currentItem().text())
 
-            config = self.data_repository.get_config()
-            config["activities"] = activities
-
-            self.data_repository.write_config(config)
+            self.data_repository.update_config("activities", activities)
             self.load_activities_into_list()
 
     def load_activities_into_list(self):
         self.list_widget.clear()
-        for activity in self.get_activities():
+        for activity in self.data_repository.get_setting("activities"):
             self.list_widget.addItem(activity)
-
-    def get_activities(self):
-        return self.data_repository.get_config()["activities"]

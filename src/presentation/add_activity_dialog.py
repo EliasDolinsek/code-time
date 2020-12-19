@@ -42,12 +42,9 @@ class AddActivityDialog(QDialog):
 
     def on_add_activity(self):
         if self.list_widget.currentItem() is not None:
-            config = self.data_repository.get_config()
-            if "activities" not in config:
-                config["activities"] = []
-
-            config["activities"].append(self.list_widget.currentItem().text())
-            self.data_repository.write_config(config)
+            activities = self.data_repository.get_setting("activities")
+            activities.append(self.list_widget.currentItem().text())
+            self.data_repository.update_config("activities", activities)
 
             self.list_manager.stop()
             self.close()
@@ -67,7 +64,7 @@ class AddActivityListManager(Thread):
         self.running = True
 
     def is_activity_not_being_tracked(self, activity):
-        return activity not in self.data_repository.get_config()["activities"]
+        return activity not in self.data_repository.get_setting("activities")
 
     def stop(self):
         self.running = False

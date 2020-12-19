@@ -13,7 +13,7 @@ class BasicImageCreator(BaseImageCreator):
         super().__init__(data_repository)
 
     def create_image(self, statistics: dict):
-        with Image.open(self.get_config()["image"]) as image:
+        with Image.open(self.data_repository.get_setting("image")) as image:
             draw = ImageDraw.Draw(image)
             self.draw_title(draw, statistics["date"])
             self.draw_total_time(draw, statistics["total_time"])
@@ -23,7 +23,7 @@ class BasicImageCreator(BaseImageCreator):
             return image
 
     def paste_user_image(self, image):
-        user_image = Image.open(self.get_config()["user_image"], "r").convert("RGBA")
+        user_image = Image.open(self.data_repository.get_setting("user_image"), "r").convert("RGBA")
         user_image = user_image.resize((BasicImageCreator.USER_IMAGE_SIZE, BasicImageCreator.USER_IMAGE_SIZE),
                                        Image.ANTIALIAS)
 
@@ -33,7 +33,7 @@ class BasicImageCreator(BaseImageCreator):
 
     def draw_watermark(self, draw: ImageDraw, max_height):
         draw.text((140, max_height - 200), "by code-time", font=ImageFont.truetype(self.get_font("semi_bold"), 30),
-                  fill=self.get_config()["watermark_color"])
+                  fill=self.data_repository.get_setting("watermark_color"))
 
     def draw_activity(self, draw: ImageDraw, name: str, time: str, progress: float, x: int, y: int):
         title_font_size = 40
@@ -45,18 +45,20 @@ class BasicImageCreator(BaseImageCreator):
         background_end_xy = (x + BasicImageCreator.PROGRESS_BAR_WIDTH, progress_end_y)
         foreground_end_xy = (x + BasicImageCreator.PROGRESS_BAR_WIDTH * progress, progress_end_y)
 
-        draw.rectangle((progress_start_xy, background_end_xy), fill=self.get_config()["progress_background_color"])
-        draw.rectangle((progress_start_xy, foreground_end_xy), fill=self.get_config()["progress_foreground_color"])
+        draw.rectangle((progress_start_xy, background_end_xy),
+                       fill=self.data_repository.get_setting("progress_background_color"))
+        draw.rectangle((progress_start_xy, foreground_end_xy),
+                       fill=self.data_repository.get_setting("progress_foreground_color"))
 
         # Draw activity title
         draw.text((x, y - title_font_size), name,
                   font=ImageFont.truetype(self.get_font("semi_bold"), title_font_size),
-                  fill=self.get_config()["activity_title_color"])
+                  fill=self.data_repository.get_setting("activity_title_color"))
 
         # Draw activity time
         draw.text((x + BasicImageCreator.PROGRESS_BAR_WIDTH, y - 20), BasicImageCreator.time_as_str(time),
                   font=ImageFont.truetype(self.get_font("bold"), 30),
-                  fill=self.get_config()["activity_time_color"],
+                  fill=self.data_repository.get_setting("activity_time_color"),
                   anchor="rt")
 
     def draw_activities(self, draw: ImageDraw, activities: list):
@@ -66,9 +68,9 @@ class BasicImageCreator(BaseImageCreator):
     def draw_total_time(self, draw: ImageDraw, total_time):
         draw.text((140, 189), BasicImageCreator.time_as_str(total_time),
                   font=ImageFont.truetype(self.get_font("extra_bold"), 60),
-                  fill=self.get_config()["total_time_color"], )
+                  fill=self.data_repository.get_setting("total_time_color"), )
 
     def draw_title(self, draw: ImageDraw, date: str):
         draw.text((140, 134), f"Coding statistics of {date}",
                   font=ImageFont.truetype(self.get_font("semi_bold"), 40),
-                  fill=self.get_config()["title_color"], )
+                  fill=self.data_repository.get_setting("title_color"), )

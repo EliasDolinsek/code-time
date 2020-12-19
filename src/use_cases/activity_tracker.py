@@ -24,7 +24,7 @@ class ActivityTracker(threading.Thread):
         self.quit_app = True
 
     def is_activity_to_track(self, activity):
-        return activity in self.data_repository.get_config()["activities"]
+        return activity in self.data_repository.get_setting("activities")
 
     def run(self):
         last_activity = self.focus_activity_provider.get_activity_name()
