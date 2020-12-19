@@ -2,7 +2,7 @@ import time
 from threading import Thread
 
 from PyQt5 import QtGui
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QListWidget, QHBoxLayout, QPushButton
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QListWidget, QPushButton
 
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
 from src.repositories.focus_activity_provider import FocusActivityProvider

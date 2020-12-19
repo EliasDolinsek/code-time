@@ -60,7 +60,7 @@ class TrayHandler:
         menu.addAction("Settings").triggered.connect(self.on_settings)
 
     def on_settings(self):
-        dialog = SettingsDialog(self.data_repository)
+        dialog = SettingsDialog(self.activity_provider, self.data_repository)
         dialog.exec_()
 
     def setup_add_activity(self, menu):
