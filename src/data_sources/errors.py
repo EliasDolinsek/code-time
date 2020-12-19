@@ -36,3 +36,10 @@ class InvalidMonthDataFileNameError(CodeTimeError):
 
     def __init__(self, message="Invalid name for month data file"):
         super(InvalidMonthDataFileNameError, self).__init__(message)
+
+
+class DefaultSettingNotFoundError(CodeTimeError):
+    """Raised when trying to get the default setting for an invalid settings-key"""
+
+    def __init__(self, message="Invalid settings-key"):
+        super(DefaultSettingNotFoundError, self).__init__(message)
