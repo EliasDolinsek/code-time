@@ -140,3 +140,4 @@ dmypy.json
 .idea/vcs.xml
 data/
 text.txt
+/res/default_background.png
