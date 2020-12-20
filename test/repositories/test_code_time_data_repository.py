@@ -539,3 +539,28 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
 
         self.assertEqual(result, "/test.txt")
         repository.get_res_file_path.assert_called_once_with("setting")
+
+    def test_write_default_config(self):
+        data_backend = DataBackend({})
+        data_backend.write_config = MagicMock()
+
+        repository = CodeTimeDataRepository(data_backend)
+        repository.write_default_config()
+
+        expected_config = {'title_color': '#000', 'total_time_color': '#000', 'progress_background_color': '#E0E0E0',
+                           'progress_foreground_color': '#3f51b5', 'activity_title_color': '#000',
+                           'activity_time_color': '#000', 'watermark_color': '#000', 'image': 'default_background.png',
+                           'user_image': 'default_user.png', 'activities': [],
+                           'fonts': {'semi_bold': 'fonts/OpenSans-SemiBold.ttf', 'bold': 'fonts/OpenSans-Bold.ttf',
+                                     'extra_bold': 'fonts/OpenSans-ExtraBold.ttf'}}
+
+        data_backend.write_config.assert_called_once_with(expected_config)
+
+    def test_create_default_config_if_config_is_missing(self):
+        data_backend = DataBackend({})
+        data_backend.does_config_file_exist = MagicMock(return_value=False)
+        data_backend.write_config = MagicMock()
+
+        repository = CodeTimeDataRepository(data_backend)
+        repository.create_default_config_if_config_is_missing()
+        data_backend.write_config.assert_called_once()

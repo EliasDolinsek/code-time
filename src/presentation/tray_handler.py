@@ -6,7 +6,7 @@ from PIL.ImageQt import ImageQt
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-from src.data_sources.errors import CodeTimeError
+from src.data_sources.errors import CodeTimeError, BackgroundImageNotFoundError, UserImageNotFoundError
 from src.presentation.add_activity_dialog import AddActivityDialog
 from src.presentation.settings.settings_dialog import SettingsDialog
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
@@ -105,10 +105,6 @@ class TrayHandler:
         except CodeTimeError as ex:
             self.show_error_message(description=str(ex))
 
-    def show_statics_of_day(self, date: datetime.date):
-        image = self.image_creator.create_image(self.data_repository.get_statistics(date))
-        self.show_image_preview(image, date)
-
     def add_statistic_actions_to_menu(self, action, date):
         action.triggered.connect(lambda: self.show_image_preview(date))
 
@@ -140,7 +136,15 @@ class TrayHandler:
 
         layout = QVBoxLayout()
 
-        image = self.image_creator.create_image(self.data_repository.get_statistics(date))
+        try:
+            image = self.image_creator.create_image(self.data_repository.get_statistics(date))
+        except BackgroundImageNotFoundError as e:
+            self.show_error_message(description=str(e))
+            return
+        except UserImageNotFoundError as e:
+            self.show_error_message(description=str(e))
+            return
+
         image = image.resize((image.width // 2, image.height // 2))
         image_view = QPixmap.fromImage(ImageQt(image))
 

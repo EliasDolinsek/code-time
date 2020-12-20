@@ -127,6 +127,9 @@ class DataBackend:
         res_dir = Path(self.paths[CONFIG_FILE_PATH_KEYWORD]).resolve().parent
         return res_dir.joinpath(relative_path)
 
+    def does_config_file_exist(self):
+        return Path(self.paths[CONFIG_FILE_PATH_KEYWORD]).resolve().exists()
+
     @staticmethod
     def parse_year_from_data_file_name(name) -> int:
         """File name example: 12-2020.json"""
