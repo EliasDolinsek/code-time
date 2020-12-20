@@ -55,7 +55,7 @@ class UserImageWidget(QWidget):
             self.load_user_image()
 
     def on_remove(self):
-        self.data_repository.update_setting("user_image", "default_user.png")
+        self.data_repository.reset_setting("user_image")
         self.load_user_image()
 
     def load_user_image(self):

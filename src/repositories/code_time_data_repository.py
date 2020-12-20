@@ -143,13 +143,17 @@ class CodeTimeDataRepository:
         elif name == "watermark_color":
             return "#000"
         elif name == "image":
-            return ""  # TODO Issue 19 - Asset and res management
+            return "default_background.png"
         elif name == "user_image":
-            return ""  # TODO Issue 19 - Asset and res management
+            return "default_user.png"
         elif name == "activities":
             return []
         elif name == "fonts":
-            return []  # TODO Issue 19 - Asset and res management
+            return {
+                "semi_bold": "fonts/OpenSans-SemiBold.ttf",
+                "bold": "fonts/OpenSans-Bold.ttf",
+                "extra_bold": "fonts/OpenSans-ExtraBold.ttf"
+            }
         else:
             raise DefaultSettingNotFoundError(message=f"Invalid settings key {name}")
 
