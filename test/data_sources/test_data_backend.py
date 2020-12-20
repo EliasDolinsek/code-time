@@ -267,3 +267,20 @@ class DataBackendTest(unittest.TestCase):
         result = data_backend.get_res_file_path("fonts/font.ttf")
 
         self.assertEqual("/fonts/font.ttf", str(result))
+
+    def test_does_config_file_exist_true(self):
+        temp_config = tempfile.mkstemp()[1]
+        paths = {
+            CONFIG_FILE_PATH_KEYWORD: temp_config
+        }
+
+        data_backend = DataBackend(paths)
+        self.assertTrue(data_backend.does_config_file_exist())
+
+    def test_does_config_file_exist_false(self):
+        paths = {
+            CONFIG_FILE_PATH_KEYWORD: "/some/not/existing/file"
+        }
+
+        data_backend = DataBackend(paths)
+        self.assertFalse(data_backend.does_config_file_exist())

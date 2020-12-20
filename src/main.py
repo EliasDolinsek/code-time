@@ -15,6 +15,8 @@ if __name__ == "__main__":
 
     data_backend = DataBackend(config)
     data_repository = CodeTimeDataRepository(data_backend=data_backend)
+    data_repository.create_default_config_if_config_is_missing()
+
     focus_activity_provider = MacFocusActivityProvider()
 
     image_creator = BasicImageCreator(data_repository)

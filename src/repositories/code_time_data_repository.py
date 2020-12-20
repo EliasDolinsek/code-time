@@ -126,6 +126,27 @@ class CodeTimeDataRepository:
     def get_res_file_path(self, relative_name):
         return str(self.data_backend.get_res_file_path(relative_name))
 
+    def create_default_config_if_config_is_missing(self):
+        if not self.data_backend.does_config_file_exist():
+            self.write_default_config()
+
+    def write_default_config(self):
+        config = {
+            "title_color": self.get_default_setting("title_color"),
+            "total_time_color": self.get_default_setting("total_time_color"),
+            "progress_background_color": self.get_default_setting("progress_background_color"),
+            "progress_foreground_color": self.get_default_setting("progress_foreground_color"),
+            "activity_title_color": self.get_default_setting("activity_title_color"),
+            "activity_time_color": self.get_default_setting("activity_time_color"),
+            "watermark_color": self.get_default_setting("watermark_color"),
+            "image": self.get_default_setting("image"),
+            "user_image": self.get_default_setting("user_image"),
+            "activities": self.get_default_setting("activities"),
+            "fonts": self.get_default_setting("fonts"),
+        }
+
+        self.write_config(config)
+
     @staticmethod
     def get_default_setting(name):
         if name == "title_color":
