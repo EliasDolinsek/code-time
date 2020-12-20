@@ -43,3 +43,17 @@ class DefaultSettingNotFoundError(CodeTimeError):
 
     def __init__(self, message="Invalid settings-key"):
         super(DefaultSettingNotFoundError, self).__init__(message)
+
+
+class BackgroundImageNotFoundError(CodeTimeError):
+    """Raised when background image is not found"""
+
+    def __init__(self, message="Could not find background image"):
+        super(BackgroundImageNotFoundError, self).__init__(message)
+
+
+class UserImageNotFoundError(CodeTimeError):
+    """Raised when user image is not found"""
+
+    def __init__(self, message="Could not find user image"):
+        super(UserImageNotFoundError, self).__init__(message)
