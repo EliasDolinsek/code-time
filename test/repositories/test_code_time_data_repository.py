@@ -515,3 +515,23 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         ]
 
         self.assertListEqual(expected_result, result)
+
+    def test_get_res_file_path(self):
+        data_backend = DataBackend({})
+        data_backend.get_res_file_path = MagicMock(return_value="/test.txt")
+
+        repository = CodeTimeDataRepository(data_backend)
+        result = repository.get_res_file_path("test.txt")
+
+        self.assertEqual("/test.txt", result)
+        data_backend.get_res_file_path.assert_called_once_with("test.txt")
+
+    def test_get_file_from_setting(self):
+        repository = CodeTimeDataRepository(None)
+        repository.get_res_file_path = MagicMock(return_value="/test.txt")
+        repository.get_setting = MagicMock(return_value="setting")
+
+        result = repository.get_file_from_setting("setting")
+
+        self.assertEqual(result, "/test.txt")
+        repository.get_res_file_path.assert_called_once_with("setting")

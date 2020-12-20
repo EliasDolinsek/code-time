@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from src.data_sources.data_backend import DataBackend
 from src.presentation.tray_handler import TrayHandler
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
@@ -7,8 +9,8 @@ from src.use_cases.image_creator.basic_image_creator import BasicImageCreator
 
 if __name__ == "__main__":
     config = {
-        "data_directory": "/Users/eliasdolinsek/development/python-development/code-time/dev_assets/data",
-        "config": "/Users/eliasdolinsek/development/python-development/code-time/dev_assets/config.json"
+        "data_directory": Path("../data").resolve(),
+        "config": Path("../res/config.json").resolve()
     }
 
     data_backend = DataBackend(config)

@@ -120,6 +120,12 @@ class CodeTimeDataRepository:
     def reset_setting(self, name):
         self.update_setting(name, self.get_default_setting(name))
 
+    def get_file_from_setting(self, name):
+        return self.get_res_file_path(self.get_setting(name))
+
+    def get_res_file_path(self, relative_name):
+        return str(self.data_backend.get_res_file_path(relative_name))
+
     @staticmethod
     def get_default_setting(name):
         if name == "title_color":

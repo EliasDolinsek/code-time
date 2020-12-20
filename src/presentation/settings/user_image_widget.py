@@ -55,8 +55,7 @@ class UserImageWidget(QWidget):
             self.load_user_image()
 
     def on_remove(self):
-        path = os.path.join(os.path.dirname(__file__), "../../../dev_assets/user.png")
-        self.data_repository.update_setting("user_image", path)
+        self.data_repository.update_setting("user_image", "default_user.png")
         self.load_user_image()
 
     def load_user_image(self):
@@ -68,4 +67,4 @@ class UserImageWidget(QWidget):
         return QPixmap(self.get_user_image_path())
 
     def get_user_image_path(self):
-        return self.data_repository.get_setting("user_image")
+        return self.data_repository.get_file_from_setting("user_image")

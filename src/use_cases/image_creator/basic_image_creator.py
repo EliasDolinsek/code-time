@@ -13,7 +13,7 @@ class BasicImageCreator(BaseImageCreator):
         super().__init__(data_repository)
 
     def create_image(self, statistics: dict):
-        with Image.open(self.data_repository.get_setting("image")) as image:
+        with Image.open(self.data_repository.get_file_from_setting("image")) as image:
             draw = ImageDraw.Draw(image)
             self.draw_title(draw, statistics["date"])
             self.draw_total_time(draw, statistics["total_time"])
@@ -23,7 +23,7 @@ class BasicImageCreator(BaseImageCreator):
             return image
 
     def paste_user_image(self, image):
-        user_image = Image.open(self.data_repository.get_setting("user_image"), "r").convert("RGBA")
+        user_image = Image.open(self.data_repository.get_file_from_setting("user_image"), "r").convert("RGBA")
         user_image = user_image.resize((BasicImageCreator.USER_IMAGE_SIZE, BasicImageCreator.USER_IMAGE_SIZE),
                                        Image.ANTIALIAS)
 

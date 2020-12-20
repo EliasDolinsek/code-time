@@ -257,3 +257,13 @@ class DataBackendTest(unittest.TestCase):
         }
 
         self.assertEqual(expected_result, result)
+
+    def test_get_res_file_path(self):
+        paths = {
+            CONFIG_FILE_PATH_KEYWORD: "/"
+        }
+
+        data_backend = DataBackend(paths)
+        result = data_backend.get_res_file_path("fonts/font.ttf")
+
+        self.assertEqual("/fonts/font.ttf", str(result))

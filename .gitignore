@@ -1,5 +1,7 @@
 # Custom
 dev_assets
+/res/config.json
+/res/default_user.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -136,5 +138,5 @@ dmypy.json
 .idea/misc.xml
 .idea/modules.xml
 .idea/vcs.xml
-dev_assets/data/
+data/
 text.txt
