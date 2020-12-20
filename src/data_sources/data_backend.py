@@ -2,6 +2,7 @@ import datetime
 import json
 import os
 from os import listdir
+from pathlib import Path
 
 from src.data_sources.errors import MonthDataFileNotFoundError, EmptyMonthDataError, ConfigFileNotFoundError, \
     EmptyConfigError, InvalidMonthDataFileNameError
@@ -65,7 +66,7 @@ class DataBackend:
             raise ConfigFileNotFoundError
 
     def write_config(self, config):
-        if config is not dict or not bool(config):
+        if type(config) is not dict or not bool(config):
             raise EmptyConfigError()
 
         with open(self.paths[CONFIG_FILE_PATH_KEYWORD], "w") as file:
@@ -121,6 +122,10 @@ class DataBackend:
 
         months.sort()
         return months
+
+    def get_res_file_path(self, relative_path):
+        res_dir = Path(self.paths[CONFIG_FILE_PATH_KEYWORD]).resolve().parent
+        return res_dir.joinpath(relative_path)
 
     @staticmethod
     def parse_year_from_data_file_name(name) -> int:

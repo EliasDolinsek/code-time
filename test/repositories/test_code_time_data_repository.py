@@ -291,6 +291,10 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         result = CodeTimeDataRepository.get_default_setting("activities")
         self.assertListEqual(result, [])
 
+    def test_get_default_setting_user_image(self):
+        result = CodeTimeDataRepository.get_default_setting("user_image")
+        self.assertEqual(result, "default_user.png")
+
     def test_get_default_setting_invalid_key(self):
         self.assertRaises(DefaultSettingNotFoundError, CodeTimeDataRepository.get_default_setting, "some_invalid_key")
 
@@ -515,3 +519,23 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         ]
 
         self.assertListEqual(expected_result, result)
+
+    def test_get_res_file_path(self):
+        data_backend = DataBackend({})
+        data_backend.get_res_file_path = MagicMock(return_value="/test.txt")
+
+        repository = CodeTimeDataRepository(data_backend)
+        result = repository.get_res_file_path("test.txt")
+
+        self.assertEqual("/test.txt", result)
+        data_backend.get_res_file_path.assert_called_once_with("test.txt")
+
+    def test_get_file_from_setting(self):
+        repository = CodeTimeDataRepository(None)
+        repository.get_res_file_path = MagicMock(return_value="/test.txt")
+        repository.get_setting = MagicMock(return_value="setting")
+
+        result = repository.get_file_from_setting("setting")
+
+        self.assertEqual(result, "/test.txt")
+        repository.get_res_file_path.assert_called_once_with("setting")

@@ -120,6 +120,12 @@ class CodeTimeDataRepository:
     def reset_setting(self, name):
         self.update_setting(name, self.get_default_setting(name))
 
+    def get_file_from_setting(self, name):
+        return self.get_res_file_path(self.get_setting(name))
+
+    def get_res_file_path(self, relative_name):
+        return str(self.data_backend.get_res_file_path(relative_name))
+
     @staticmethod
     def get_default_setting(name):
         if name == "title_color":
@@ -137,13 +143,17 @@ class CodeTimeDataRepository:
         elif name == "watermark_color":
             return "#000"
         elif name == "image":
-            return ""  # TODO Issue 19 - Asset and res management
+            return "default_background.png"
         elif name == "user_image":
-            return ""  # TODO Issue 19 - Asset and res management
+            return "default_user.png"
         elif name == "activities":
             return []
         elif name == "fonts":
-            return []  # TODO Issue 19 - Asset and res management
+            return {
+                "semi_bold": "fonts/OpenSans-SemiBold.ttf",
+                "bold": "fonts/OpenSans-Bold.ttf",
+                "extra_bold": "fonts/OpenSans-ExtraBold.ttf"
+            }
         else:
             raise DefaultSettingNotFoundError(message=f"Invalid settings key {name}")
 
