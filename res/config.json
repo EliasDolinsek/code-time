@@ -1,0 +1,19 @@
+{
+  "title_color": "#000",
+  "total_time_color": "#000",
+  "progress_background_color": "#E0E0E0",
+  "progress_foreground_color": "#3f51b5",
+  "activity_title_color": "#000",
+  "activity_time_color": "#000",
+  "watermark_color": "#000",
+  "image": "default_background.png",
+  "user_image": "default_user.png",
+  "activities": [
+    "PyCharm"
+  ],
+  "fonts": {
+    "semi_bold": "fonts/OpenSans-SemiBold.ttf",
+    "bold": "fonts/OpenSans-Bold.ttf",
+    "extra_bold": "fonts/OpenSans-ExtraBold.ttf"
+  }
+}
