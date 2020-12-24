@@ -257,7 +257,7 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         result = data_repository.get_setting("username")
         self.assertEqual("a random user", result)
 
-    def test_reset_settings(self):
+    def test_reset_setting(self):
         data_repository = CodeTimeDataRepository(None)
         data_repository.get_default_setting = MagicMock(return_value="#000")
         data_repository.update_setting = MagicMock()
