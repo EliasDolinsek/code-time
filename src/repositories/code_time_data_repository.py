@@ -110,7 +110,11 @@ class CodeTimeDataRepository:
         self.data_backend.write_config(config)
 
     def get_setting(self, name):
-        return self.get_config()[name]
+        config = self.get_config()
+        if name not in config:
+            return self.get_default_setting(name)
+        else:
+            return config[name]
 
     def update_setting(self, name, value):
         config = self.get_config()

@@ -237,7 +237,7 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
 
         data_backend.write_config.assert_called_once_with({"enabled": False})
 
-    def test_get_setting(self):
+    def test_get_setting_available_key(self):
         mock_config = {"enabled": True}
 
         data_backend = DataBackend({})
@@ -248,6 +248,14 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
 
         self.assertTrue(result)
         data_backend.read_config.assert_called_once()
+
+    def test_get_setting_not_available_key(self):
+        mock_config = {"enabled": True}
+        data_repository = CodeTimeDataRepository(None)
+        data_repository.get_config = MagicMock(return_value=mock_config)
+
+        result = data_repository.get_setting("username")
+        self.assertEqual("a random user", result)
 
     def test_reset_settings(self):
         data_repository = CodeTimeDataRepository(None)
