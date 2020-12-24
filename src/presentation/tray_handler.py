@@ -12,6 +12,7 @@ from src.presentation.settings.settings_dialog import SettingsDialog
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
 from src.repositories.focus_activity_provider import FocusActivityProvider
 from src.use_cases.activity_tracker import ActivityTracker
+from src.use_cases.autostart import CodeTimeAutostart
 from src.use_cases.image_creator.basic_image_creator import BasicImageCreator
 
 TEXT_PAUSE = "Pause tracking"
@@ -21,8 +22,10 @@ TEXT_CONTINUE = "Continue tracking"
 class TrayHandler:
 
     def __init__(self, image_creator: BasicImageCreator, activity_tracker: ActivityTracker,
-                 data_repository: CodeTimeDataRepository, activity_provider: FocusActivityProvider):
+                 data_repository: CodeTimeDataRepository, activity_provider: FocusActivityProvider,
+                 autostart: CodeTimeAutostart):
         super().__init__()
+        self.autostart = autostart
         self.activity_provider = activity_provider
         self.image_creator = image_creator
         self.activity_tracker = activity_tracker
@@ -59,7 +62,7 @@ class TrayHandler:
         menu.addAction("Settings").triggered.connect(self.on_settings)
 
     def on_settings(self):
-        dialog = SettingsDialog(self.activity_provider, self.data_repository)
+        dialog = SettingsDialog(self.activity_provider, self.data_repository, self.autostart)
         dialog.exec_()
 
     def save_statistic_as_png(self, date):
