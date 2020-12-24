@@ -564,7 +564,7 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
                            'activity_time_color': '#000', 'watermark_color': '#000', 'image': 'default_background.png',
                            'user_image': 'default_user.png', 'activities': [],
                            'fonts': {'semi_bold': 'fonts/OpenSans-SemiBold.ttf', 'bold': 'fonts/OpenSans-Bold.ttf',
-                                     'extra_bold': 'fonts/OpenSans-ExtraBold.ttf'}}
+                                     'extra_bold': 'fonts/OpenSans-ExtraBold.ttf'}, 'username': 'a random user'}
 
         data_backend.write_config.assert_called_once_with(expected_config)
 
