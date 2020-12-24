@@ -110,7 +110,11 @@ class CodeTimeDataRepository:
         self.data_backend.write_config(config)
 
     def get_setting(self, name):
-        return self.get_config()[name]
+        config = self.get_config()
+        if name not in config:
+            return self.get_default_setting(name)
+        else:
+            return config[name]
 
     def update_setting(self, name, value):
         config = self.get_config()
@@ -130,6 +134,10 @@ class CodeTimeDataRepository:
         if not self.data_backend.does_config_file_exist():
             self.write_default_config()
 
+    def reset_settings(self):
+        self.write_default_config()
+        self.cache_config()
+
     def write_default_config(self):
         config = {
             "title_color": self.get_default_setting("title_color"),
@@ -143,6 +151,7 @@ class CodeTimeDataRepository:
             "user_image": self.get_default_setting("user_image"),
             "activities": self.get_default_setting("activities"),
             "fonts": self.get_default_setting("fonts"),
+            "username": self.get_default_setting("username")
         }
 
         self.write_config(config)
@@ -175,6 +184,8 @@ class CodeTimeDataRepository:
                 "bold": "fonts/OpenSans-Bold.ttf",
                 "extra_bold": "fonts/OpenSans-ExtraBold.ttf"
             }
+        elif name == "username":
+            return "a random user"
         else:
             raise DefaultSettingNotFoundError(message=f"Invalid settings key {name}")
 

@@ -40,7 +40,12 @@ class BasicImageCreator(BaseImageCreator):
         image.paste(user_image, (user_image_x, user_image_y), user_image)
 
     def draw_watermark(self, draw: ImageDraw, max_height):
-        draw.text((140, max_height - 200), "by code-time", font=ImageFont.truetype(self.get_font("semi_bold"), 30),
+        username = self.data_repository.get_setting("username").strip()
+        title = "by code-time"
+        if username != "":
+            title += f" for {username}"
+
+        draw.text((140, max_height - 200), title, font=ImageFont.truetype(self.get_font("semi_bold"), 30),
                   fill=self.data_repository.get_setting("watermark_color"))
 
     def draw_activity(self, draw: ImageDraw, name: str, time: str, progress: float, x: int, y: int):
