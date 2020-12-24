@@ -295,6 +295,10 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         result = CodeTimeDataRepository.get_default_setting("user_image")
         self.assertEqual(result, "default_user.png")
 
+    def test_get_default_setting_username(self):
+        result = CodeTimeDataRepository.get_default_setting("username")
+        self.assertEqual(result, "a random user")
+
     def test_get_default_setting_invalid_key(self):
         self.assertRaises(DefaultSettingNotFoundError, CodeTimeDataRepository.get_default_setting, "some_invalid_key")
 

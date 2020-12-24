@@ -143,6 +143,7 @@ class CodeTimeDataRepository:
             "user_image": self.get_default_setting("user_image"),
             "activities": self.get_default_setting("activities"),
             "fonts": self.get_default_setting("fonts"),
+            "username": self.get_default_setting("username")
         }
 
         self.write_config(config)
@@ -175,6 +176,8 @@ class CodeTimeDataRepository:
                 "bold": "fonts/OpenSans-Bold.ttf",
                 "extra_bold": "fonts/OpenSans-ExtraBold.ttf"
             }
+        elif name == "username":
+            return "a random user"
         else:
             raise DefaultSettingNotFoundError(message=f"Invalid settings key {name}")
 
