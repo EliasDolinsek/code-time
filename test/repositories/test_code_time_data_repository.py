@@ -568,6 +568,16 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
 
         data_backend.write_config.assert_called_once_with(expected_config)
 
+    def test_reset_settings(self):
+        repository = CodeTimeDataRepository(None)
+        repository.write_default_config = MagicMock()
+        repository.cache_config = MagicMock()
+
+        repository.reset_settings()
+
+        repository.write_default_config.assert_called_once()
+        repository.cache_config.assert_called_once()
+
     def test_create_default_config_if_config_is_missing(self):
         data_backend = DataBackend({})
         data_backend.does_config_file_exist = MagicMock(return_value=False)

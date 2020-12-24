@@ -134,6 +134,10 @@ class CodeTimeDataRepository:
         if not self.data_backend.does_config_file_exist():
             self.write_default_config()
 
+    def reset_settings(self):
+        self.write_default_config()
+        self.cache_config()
+
     def write_default_config(self):
         config = {
             "title_color": self.get_default_setting("title_color"),

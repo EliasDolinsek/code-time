@@ -21,7 +21,7 @@ class SettingsDialog(QDialog):
         # Tab widget
         self.tabs = QTabWidget()
 
-        self.tabs.addTab(GeneralWidget(self.data_repository), "General")
+        self.tabs.addTab(GeneralWidget(self.data_repository, self), "General")
         self.tabs.addTab(ThemeWidget(self.data_repository), "Theme")
         self.tabs.addTab(UserImageWidget(self.data_repository), "User Image")
         self.tabs.addTab(AutostartWidget(), "Autostart")
