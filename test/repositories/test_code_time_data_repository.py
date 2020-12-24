@@ -214,7 +214,8 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
 
         self.assertDictEqual(mock_config, result)
 
-    def test_write_config(self):
+    @staticmethod
+    def test_write_config():
         mock_config = {"enabled": True}
 
         data_backend = DataBackend({})
@@ -237,7 +238,7 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
 
         data_backend.write_config.assert_called_once_with({"enabled": False})
 
-    def test_get_setting(self):
+    def test_get_setting_available_key(self):
         mock_config = {"enabled": True}
 
         data_backend = DataBackend({})
@@ -249,7 +250,16 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         self.assertTrue(result)
         data_backend.read_config.assert_called_once()
 
-    def test_reset_settings(self):
+    def test_get_setting_not_available_key(self):
+        mock_config = {"enabled": True}
+        data_repository = CodeTimeDataRepository(None)
+        data_repository.get_config = MagicMock(return_value=mock_config)
+
+        result = data_repository.get_setting("username")
+        self.assertEqual("a random user", result)
+
+    @staticmethod
+    def test_reset_setting():
         data_repository = CodeTimeDataRepository(None)
         data_repository.get_default_setting = MagicMock(return_value="#000")
         data_repository.update_setting = MagicMock()
@@ -294,6 +304,10 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
     def test_get_default_setting_user_image(self):
         result = CodeTimeDataRepository.get_default_setting("user_image")
         self.assertEqual(result, "default_user.png")
+
+    def test_get_default_setting_username(self):
+        result = CodeTimeDataRepository.get_default_setting("username")
+        self.assertEqual(result, "a random user")
 
     def test_get_default_setting_invalid_key(self):
         self.assertRaises(DefaultSettingNotFoundError, CodeTimeDataRepository.get_default_setting, "some_invalid_key")
@@ -540,7 +554,8 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         self.assertEqual(result, "/test.txt")
         repository.get_res_file_path.assert_called_once_with("setting")
 
-    def test_write_default_config(self):
+    @staticmethod
+    def test_write_default_config():
         data_backend = DataBackend({})
         data_backend.write_config = MagicMock()
 
@@ -552,11 +567,23 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
                            'activity_time_color': '#000', 'watermark_color': '#000', 'image': 'default_background.png',
                            'user_image': 'default_user.png', 'activities': [],
                            'fonts': {'semi_bold': 'fonts/OpenSans-SemiBold.ttf', 'bold': 'fonts/OpenSans-Bold.ttf',
-                                     'extra_bold': 'fonts/OpenSans-ExtraBold.ttf'}}
+                                     'extra_bold': 'fonts/OpenSans-ExtraBold.ttf'}, 'username': 'a random user'}
 
         data_backend.write_config.assert_called_once_with(expected_config)
 
-    def test_create_default_config_if_config_is_missing(self):
+    @staticmethod
+    def test_reset_settings():
+        repository = CodeTimeDataRepository(None)
+        repository.write_default_config = MagicMock()
+        repository.cache_config = MagicMock()
+
+        repository.reset_settings()
+
+        repository.write_default_config.assert_called_once()
+        repository.cache_config.assert_called_once()
+
+    @staticmethod
+    def test_create_default_config_if_config_is_missing():
         data_backend = DataBackend({})
         data_backend.does_config_file_exist = MagicMock(return_value=False)
         data_backend.write_config = MagicMock()

@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButt
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
 
 
-class ThemeSettingsWidget(QWidget):
+class ThemeWidget(QWidget):
     def __init__(self, data_repository: CodeTimeDataRepository):
         super().__init__()
         self.data_repository = data_repository
