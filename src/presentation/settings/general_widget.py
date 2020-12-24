@@ -6,7 +6,7 @@ from src.repositories.code_time_data_repository import CodeTimeDataRepository
 class GeneralWidget(QWidget):
 
     def __init__(self, data_repository: CodeTimeDataRepository, parent: QDialog):
-        """Widget containing general settings like username and reset settings"""
+        """Widget containing general settings like username and reset settings."""
         super().__init__()
         self.parent = parent
         self.data_repository = data_repository
