@@ -7,6 +7,7 @@ from src.use_cases.autostart import AutostartManager
 class AutostartWidget(QWidget):
 
     def __init__(self, autostart_manager: AutostartManager):
+        """Widget for autostart settings."""
         super().__init__()
         self.autostart_manager = autostart_manager
 

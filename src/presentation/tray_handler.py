@@ -1,10 +1,10 @@
 import datetime
-
 from pathlib import Path
 
 from PIL.ImageQt import ImageQt
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QAction, QApplication, QSystemTrayIcon, QMenu, QFileDialog, QMessageBox, QDialog, QLabel, \
+    QPushButton, QVBoxLayout
 
 from src.data_sources.errors import CodeTimeError, BackgroundImageNotFoundError, UserImageNotFoundError
 from src.presentation.settings.settings_dialog import SettingsDialog

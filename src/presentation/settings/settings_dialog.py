@@ -11,7 +11,9 @@ from src.use_cases.autostart import AutostartManager
 
 
 class SettingsDialog(QDialog):
-    def __init__(self, focus_activity_provider: FocusActivityProvider, data_repository: CodeTimeDataRepository, autostart: AutostartManager):
+    def __init__(self, focus_activity_provider: FocusActivityProvider, data_repository: CodeTimeDataRepository,
+                 autostart: AutostartManager):
+        """Dialog for all application settings."""
         super().__init__()
         self.autostart = autostart
         self.focus_activity_provider = focus_activity_provider
