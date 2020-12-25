@@ -8,7 +8,7 @@ class AutostartManager:
         self.autostart = SmartAutostart()
         self.name = "com.codetime"
         self.options = {
-            "args": [file, "--minimize"]
+            "args": [file]
         }
 
     def enable(self):
