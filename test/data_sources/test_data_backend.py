@@ -4,8 +4,10 @@ import tempfile
 import unittest
 from datetime import date
 from os import listdir
+from pathlib import Path
 
-from src.data_sources.data_backend import DataBackend, DATA_FILES_PATH_KEYWORD, CONFIG_FILE_PATH_KEYWORD
+from src.data_sources.data_backend import DataBackend, DATA_FILES_PATH_KEYWORD, CONFIG_FILE_PATH_KEYWORD, \
+    RES_DIRECTORY_KEYWORD
 from src.data_sources.errors import MonthDataFileNotFoundError, EmptyMonthDataError, ConfigFileNotFoundError, \
     EmptyConfigError, InvalidMonthDataFileNameError
 
@@ -17,7 +19,7 @@ class DataBackendTest(unittest.TestCase):
         if not os.path.exists(temp_directory):
             os.mkdir(temp_directory)
 
-        self.data_directory = os.path.join(tempfile.gettempdir(), "data/")
+        self.data_directory = Path(tempfile.gettempdir()).joinpath("data/")
         if not os.path.exists(self.data_directory):
             os.mkdir(self.data_directory)
 
@@ -34,7 +36,7 @@ class DataBackendTest(unittest.TestCase):
         test_date = date(2020, 1, 1)
         data_backend = DataBackend(paths)
 
-        expected_result = os.path.join(self.data_directory, "01-2020.json")
+        expected_result = self.data_directory.joinpath("01-2020.json")
         result = data_backend.get_data_file_path(test_date)
 
         self.assertEqual(expected_result, result)
@@ -47,14 +49,14 @@ class DataBackendTest(unittest.TestCase):
         test_date = date(2020, 10, 1)
         data_backend = DataBackend(paths)
 
-        expected_result = os.path.join(self.data_directory, "10-2020.json")
+        expected_result = self.data_directory.joinpath("10-2020.json")
         result = data_backend.get_data_file_path(test_date)
 
         self.assertEqual(expected_result, result)
 
     def test_read_month_data_file_not_available(self):
         paths = {
-            DATA_FILES_PATH_KEYWORD: "/this/path/does/not/exist"
+            DATA_FILES_PATH_KEYWORD: Path("/Some/Invalid/Path")
         }
 
         data_backend = DataBackend(paths)
@@ -74,7 +76,7 @@ class DataBackendTest(unittest.TestCase):
         }
 
         file_name = "01-2020.json"
-        with open(os.path.join(self.data_directory, file_name), "w") as file:
+        with open(self.data_directory.joinpath(file_name), "w") as file:
             file.write(json.dumps(mock_data))
 
         data_backend = DataBackend(paths)
@@ -260,7 +262,7 @@ class DataBackendTest(unittest.TestCase):
 
     def test_get_res_file_path(self):
         paths = {
-            CONFIG_FILE_PATH_KEYWORD: "/"
+            RES_DIRECTORY_KEYWORD: Path("/")
         }
 
         data_backend = DataBackend(paths)
@@ -279,7 +281,7 @@ class DataBackendTest(unittest.TestCase):
 
     def test_does_config_file_exist_false(self):
         paths = {
-            CONFIG_FILE_PATH_KEYWORD: "/some/not/existing/file"
+            CONFIG_FILE_PATH_KEYWORD: Path(__file__).joinpath(Path("config.json"))
         }
 
         data_backend = DataBackend(paths)

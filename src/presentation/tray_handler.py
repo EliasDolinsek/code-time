@@ -7,12 +7,11 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 from src.data_sources.errors import CodeTimeError, BackgroundImageNotFoundError, UserImageNotFoundError
-from src.presentation.add_activity_dialog import AddActivityDialog
 from src.presentation.settings.settings_dialog import SettingsDialog
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
 from src.repositories.focus_activity_provider import FocusActivityProvider
 from src.use_cases.activity_tracker import ActivityTracker
-from src.use_cases.autostart import CodeTimeAutostart
+from src.use_cases.autostart import AutostartManager
 from src.use_cases.image_creator.basic_image_creator import BasicImageCreator
 
 TEXT_PAUSE = "Pause tracking"
@@ -23,7 +22,7 @@ class TrayHandler:
 
     def __init__(self, image_creator: BasicImageCreator, activity_tracker: ActivityTracker,
                  data_repository: CodeTimeDataRepository, activity_provider: FocusActivityProvider,
-                 autostart: CodeTimeAutostart):
+                 autostart: AutostartManager):
         super().__init__()
         self.autostart = autostart
         self.activity_provider = activity_provider
@@ -38,7 +37,7 @@ class TrayHandler:
         self.app.setQuitOnLastWindowClosed(False)
 
     def start(self):
-        icon = QIcon("../res/clock.svg")
+        icon = QIcon(self.data_repository.get_res_file_path("clock.svg"))
 
         tray = QSystemTrayIcon()
         tray.setIcon(icon)
