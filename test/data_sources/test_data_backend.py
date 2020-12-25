@@ -60,7 +60,8 @@ class DataBackendTest(unittest.TestCase):
         }
 
         data_backend = DataBackend(paths)
-        self.assertRaises(MonthDataFileNotFoundError, data_backend.read_month_data, date(2020, 1, 1))
+        result = data_backend.read_month_data(date(2020, 1, 1))
+        self.assertDictEqual(result, {})
 
     def test_read_month_data_file_available(self):
         paths = {

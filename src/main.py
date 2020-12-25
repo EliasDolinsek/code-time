@@ -12,9 +12,9 @@ from src.use_cases.image_creator.basic_image_creator import BasicImageCreator
 if __name__ == "__main__":
     main_file = Path(sys.executable).resolve()
     paths = {
-        "data_directory": main_file.parent.joinpath(Path("data")),
-        "config": main_file.parent.joinpath(Path("config.json")),
-        "res_directory": main_file.parent.joinpath(Path("res"))
+        "data_directory": main_file.parent.joinpath(Path("data")).resolve(),
+        "config": main_file.parent.joinpath(Path("config.json")).resolve(),
+        "res_directory": main_file.parent.joinpath(Path("res")).resolve()
     }
 
     data_backend = DataBackend(paths)

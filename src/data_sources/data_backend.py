@@ -16,11 +16,12 @@ class DataBackend:
     def __init__(self, paths: dict):
         self.paths = paths
 
-    def get_data_file_path(self, date: datetime.date) -> str:
+    def get_data_file_path(self, date: datetime.date) -> Path:
         month_str = str(date.month)
         if date.month < 10:
             month_str = f"0{month_str}"
 
+        print(self.paths[DATA_FILES_PATH_KEYWORD].joinpath(Path(f"{month_str}-{date.year}.json")))
         return self.paths[DATA_FILES_PATH_KEYWORD].joinpath(Path(f"{month_str}-{date.year}.json"))
 
     def read_month_data(self, date: datetime.date) -> dict:
@@ -36,7 +37,7 @@ class DataBackend:
         :return: dict of month data
         """
         file_path = self.get_data_file_path(date)
-        if os.path.exists(file_path):
+        if file_path.exists():
             with open(file_path, "r") as file:
                 content = json.loads(file.read())
                 formatted_month_data = {}
@@ -46,7 +47,7 @@ class DataBackend:
 
                 return formatted_month_data
         else:
-            raise MonthDataFileNotFoundError
+            return {}
 
     def write_month_data(self, data: dict, date: datetime):
         if not bool(data):
