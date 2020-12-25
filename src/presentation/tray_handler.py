@@ -1,17 +1,17 @@
 import datetime
-
 from pathlib import Path
 
 from PIL.ImageQt import ImageQt
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QAction, QApplication, QSystemTrayIcon, QMenu, QFileDialog, QMessageBox, QDialog, QLabel, \
+    QPushButton, QVBoxLayout
 
 from src.data_sources.errors import CodeTimeError, BackgroundImageNotFoundError, UserImageNotFoundError
-from src.presentation.add_activity_dialog import AddActivityDialog
 from src.presentation.settings.settings_dialog import SettingsDialog
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
 from src.repositories.focus_activity_provider import FocusActivityProvider
 from src.use_cases.activity_tracker import ActivityTracker
+from src.use_cases.autostart import AutostartManager
 from src.use_cases.image_creator.basic_image_creator import BasicImageCreator
 
 TEXT_PAUSE = "Pause tracking"
@@ -21,8 +21,10 @@ TEXT_CONTINUE = "Continue tracking"
 class TrayHandler:
 
     def __init__(self, image_creator: BasicImageCreator, activity_tracker: ActivityTracker,
-                 data_repository: CodeTimeDataRepository, activity_provider: FocusActivityProvider):
+                 data_repository: CodeTimeDataRepository, activity_provider: FocusActivityProvider,
+                 autostart: AutostartManager):
         super().__init__()
+        self.autostart = autostart
         self.activity_provider = activity_provider
         self.image_creator = image_creator
         self.activity_tracker = activity_tracker
@@ -35,7 +37,7 @@ class TrayHandler:
         self.app.setQuitOnLastWindowClosed(False)
 
     def start(self):
-        icon = QIcon("../res/clock.svg")
+        icon = QIcon(self.data_repository.get_res_file_path("clock.svg"))
 
         tray = QSystemTrayIcon()
         tray.setIcon(icon)
@@ -59,7 +61,7 @@ class TrayHandler:
         menu.addAction("Settings").triggered.connect(self.on_settings)
 
     def on_settings(self):
-        dialog = SettingsDialog(self.activity_provider, self.data_repository)
+        dialog = SettingsDialog(self.activity_provider, self.data_repository, self.autostart)
         dialog.exec_()
 
     def save_statistic_as_png(self, date):

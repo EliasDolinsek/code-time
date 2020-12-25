@@ -7,11 +7,15 @@ from src.presentation.settings.theme_widget import ThemeWidget
 from src.presentation.settings.user_image_widget import UserImageWidget
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
 from src.repositories.focus_activity_provider import FocusActivityProvider
+from src.use_cases.autostart import AutostartManager
 
 
 class SettingsDialog(QDialog):
-    def __init__(self, focus_activity_provider: FocusActivityProvider, data_repository: CodeTimeDataRepository):
+    def __init__(self, focus_activity_provider: FocusActivityProvider, data_repository: CodeTimeDataRepository,
+                 autostart: AutostartManager):
+        """Dialog for all application settings."""
         super().__init__()
+        self.autostart = autostart
         self.focus_activity_provider = focus_activity_provider
         self.data_repository = data_repository
 
@@ -24,7 +28,7 @@ class SettingsDialog(QDialog):
         self.tabs.addTab(GeneralWidget(self.data_repository, self), "General")
         self.tabs.addTab(ThemeWidget(self.data_repository), "Theme")
         self.tabs.addTab(UserImageWidget(self.data_repository), "User Image")
-        self.tabs.addTab(AutostartWidget(), "Autostart")
+        self.tabs.addTab(AutostartWidget(self.autostart), "Autostart")
         self.tabs.addTab(ActivitiesWidget(self.focus_activity_provider, self.data_repository), "Activities")
 
         self.layout.addWidget(self.tabs)

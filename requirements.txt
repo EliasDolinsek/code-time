@@ -2,6 +2,7 @@ altgraph==0.17
 macholib==1.14
 mock==4.0.3
 Pillow==8.0.1
+pyautostart==0.1.2
 pyinstaller==4.1
 pyinstaller-hooks-contrib==2020.10
 pyobjc==7.0.1

@@ -9,18 +9,19 @@ from src.data_sources.errors import MonthDataFileNotFoundError, EmptyMonthDataEr
 
 DATA_FILES_PATH_KEYWORD = "data_directory"
 CONFIG_FILE_PATH_KEYWORD = "config"
+RES_DIRECTORY_KEYWORD = "res_directory"
 
 
 class DataBackend:
     def __init__(self, paths: dict):
         self.paths = paths
 
-    def get_data_file_path(self, date: datetime.date) -> str:
+    def get_data_file_path(self, date: datetime.date) -> Path:
         month_str = str(date.month)
         if date.month < 10:
             month_str = f"0{month_str}"
 
-        return os.path.join(self.paths[DATA_FILES_PATH_KEYWORD], f"{month_str}-{date.year}.json")
+        return self.paths[DATA_FILES_PATH_KEYWORD].joinpath(Path(f"{month_str}-{date.year}.json"))
 
     def read_month_data(self, date: datetime.date) -> dict:
         """
@@ -35,7 +36,7 @@ class DataBackend:
         :return: dict of month data
         """
         file_path = self.get_data_file_path(date)
-        if os.path.exists(file_path):
+        if file_path.exists():
             with open(file_path, "r") as file:
                 content = json.loads(file.read())
                 formatted_month_data = {}
@@ -45,7 +46,7 @@ class DataBackend:
 
                 return formatted_month_data
         else:
-            raise MonthDataFileNotFoundError
+            return {}
 
     def write_month_data(self, data: dict, date: datetime):
         if not bool(data):
@@ -124,8 +125,7 @@ class DataBackend:
         return months
 
     def get_res_file_path(self, relative_path):
-        res_dir = Path(self.paths[CONFIG_FILE_PATH_KEYWORD]).resolve().parent
-        return res_dir.joinpath(relative_path)
+        return self.paths["res_directory"].joinpath(relative_path)
 
     def does_config_file_exist(self):
         return Path(self.paths[CONFIG_FILE_PATH_KEYWORD]).resolve().exists()
