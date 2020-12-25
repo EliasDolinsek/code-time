@@ -10,12 +10,20 @@ from src.use_cases.autostart import AutostartManager
 from src.use_cases.image_creator.basic_image_creator import BasicImageCreator
 
 if __name__ == "__main__":
-    main_file = Path(sys.executable).resolve()
-    paths = {
-        "data_directory": main_file.parent.joinpath(Path("data")).resolve(),
-        "config": main_file.parent.joinpath(Path("config.json")).resolve(),
-        "res_directory": main_file.parent.joinpath(Path("res")).resolve()
-    }
+    if getattr(sys, 'frozen', False):
+        main_file = Path(sys.executable).resolve()
+        paths = {
+            "data_directory": main_file.parent.joinpath(Path("data")).resolve(),
+            "config": main_file.parent.joinpath(Path("config.json")).resolve(),
+            "res_directory": main_file.parent.joinpath(Path("res")).resolve()
+        }
+    else:
+        main_file = Path(__file__)
+        paths = {
+            "data_directory": main_file.parent.parent.joinpath(Path("data/")).resolve(),
+            "config": main_file.parent.parent.joinpath(Path("config.json")).resolve(),
+            "res_directory": main_file.parent.parent.joinpath("res/").resolve()
+        }
 
     data_backend = DataBackend(paths)
     data_repository = CodeTimeDataRepository(data_backend=data_backend)

@@ -21,7 +21,6 @@ class DataBackend:
         if date.month < 10:
             month_str = f"0{month_str}"
 
-        print(self.paths[DATA_FILES_PATH_KEYWORD].joinpath(Path(f"{month_str}-{date.year}.json")))
         return self.paths[DATA_FILES_PATH_KEYWORD].joinpath(Path(f"{month_str}-{date.year}.json"))
 
     def read_month_data(self, date: datetime.date) -> dict:
