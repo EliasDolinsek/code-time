@@ -35,7 +35,7 @@ if __name__ == "__main__":
     activity_tracker = ActivityTracker(data_repository=data_repository, focus_activity_provider=focus_activity_provider)
     activity_tracker.start()
 
-    autostart = AutostartManager(str(Path(__file__).resolve()))
+    autostart = AutostartManager(str(main_file))
     tray_handler = TrayHandler(image_creator=image_creator, activity_tracker=activity_tracker,
                                data_repository=data_repository, activity_provider=focus_activity_provider,
                                autostart=autostart)

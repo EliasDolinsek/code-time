@@ -7,7 +7,7 @@ class AutostartManager:
         self.autostart = SmartAutostart()
         self.name = "com.codetime"
         self.options = {
-            "args": ["python3", file]
+            "args": [file]
         }
 
     def enable(self):
