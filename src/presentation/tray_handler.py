@@ -6,8 +6,7 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QAction, QApplication, QSystemTrayIcon, QMenu, QFileDialog, QMessageBox, QDialog, QLabel, \
     QPushButton, QVBoxLayout
 
-from src.data_sources.errors import CodeTimeError, BackgroundImageNotFoundError, UserImageNotFoundError, \
-    DataNotAvailableError
+from src.data_sources.errors import CodeTimeError, DataNotAvailableError
 from src.presentation.settings.settings_dialog import SettingsDialog
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
 from src.repositories.focus_activity_provider import FocusActivityProvider
