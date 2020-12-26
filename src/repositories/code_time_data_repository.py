@@ -1,7 +1,7 @@
 import datetime
 
 from src.data_sources.data_backend import DataBackend
-from src.data_sources.errors import DefaultSettingNotFoundError
+from src.data_sources.errors import DefaultSettingNotFoundError, DataNotAvailableError
 
 
 class CodeTimeDataRepository:
@@ -190,7 +190,11 @@ class CodeTimeDataRepository:
             raise DefaultSettingNotFoundError(message=f"Invalid settings key {name}")
 
     def get_statistics(self, date: datetime.date):
-        data = self.get_month_data(date)[date.day]
+        data = self.get_month_data(date)
+        if date.day not in data:
+            raise DataNotAvailableError()
+
+        data = data[date.day]
         total_time = 0
         sorted_activities = []
 
