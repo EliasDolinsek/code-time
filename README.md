@@ -21,9 +21,8 @@ using a tray menu.
 
 ### macOS
 
-Download the latest release from the Releases section. It includes the executable file called `main`, `config.json` and
-two folders called `res` for resources, and a folder called `data` which stores all tracking data. Copy everything and
-put it into a folder of your desire.
+Download the latest release from the releases section. It includes the executable file called `main`, `config.json` and
+a folder called `res` for resources. Copy everything and put it into a folder of your desire.
 
 ### Windows
 
