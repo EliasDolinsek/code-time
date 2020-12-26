@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import MagicMock, call
 
 from src.data_sources.data_backend import DataBackend
-from src.data_sources.errors import DefaultSettingNotFoundError
+from src.data_sources.errors import DefaultSettingNotFoundError, DataNotAvailableError
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
 
 
@@ -344,6 +344,13 @@ class CodeTimeDataRepositoryTest(unittest.TestCase):
         }
 
         self.assertDictEqual(expected_result, result)
+
+    def test_get_statistics_not_available_day(self):
+        data_backend = DataBackend({})
+        data_backend.read_month_data = MagicMock(return_value={})
+
+        data_repository = CodeTimeDataRepository(data_backend)
+        self.assertRaises(DataNotAvailableError, data_repository.get_statistics, datetime.date(2020, 1, 1))
 
     def test_summarize_activities_single_activity(self):
         activities = [

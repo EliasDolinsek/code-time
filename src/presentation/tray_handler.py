@@ -6,7 +6,7 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QAction, QApplication, QSystemTrayIcon, QMenu, QFileDialog, QMessageBox, QDialog, QLabel, \
     QPushButton, QVBoxLayout
 
-from src.data_sources.errors import CodeTimeError, BackgroundImageNotFoundError, UserImageNotFoundError
+from src.data_sources.errors import CodeTimeError, DataNotAvailableError
 from src.presentation.settings.settings_dialog import SettingsDialog
 from src.repositories.code_time_data_repository import CodeTimeDataRepository
 from src.repositories.focus_activity_provider import FocusActivityProvider
@@ -140,10 +140,10 @@ class TrayHandler:
 
         try:
             image = self.image_creator.create_image(self.data_repository.get_statistics(date))
-        except BackgroundImageNotFoundError as e:
-            self.show_error_message(description=str(e))
+        except DataNotAvailableError as e:
+            self.show_error_message(title="Data not found", description=str(e))
             return
-        except UserImageNotFoundError as e:
+        except CodeTimeError as e:
             self.show_error_message(description=str(e))
             return
 
